@@ -73,3 +73,19 @@ Modèle de **Poisson**, calculé championnat par championnat :
 - Les championnats extra (USA, ARG, BRA, SWE, JPN, NOR) n'ont pas de score à la mi-temps. Ils sont exclus des indicateurs 1re / 2e période.
 - Ces championnats se jouent sur une année civile, alors que les européens vont d'août à mai. Comparer les pourcentages reste possible, mais le nombre de matchs joués diffère.
 - Mode hors ligne (tests) : définir la variable `FOOT_DATA_DIR` vers un dossier contenant `<saison>/<code>.csv`, `new/<code>.csv`, `fixtures.csv` et `new_league_fixtures.csv`.
+
+## Notification par e-mail à chaque visite
+
+L'application peut t'envoyer un e-mail à chaque nouvelle visite : date et heure (Brazzaville), type d'appareil, navigateur et langue. Un même visiteur ne déclenche qu'un e-mail toutes les 30 minutes, même s'il recharge la page.
+
+1. **Créer un mot de passe d'application Gmail** : sur https://myaccount.google.com, va dans « Sécurité », active la « Validation en deux étapes », puis ouvre « Mots de passe des applications » (https://myaccount.google.com/apppasswords). Crée un mot de passe nommé « Streamlit » et copie le code de 16 lettres.
+2. **Le donner à Streamlit Cloud** : sur share.streamlit.io, ouvre ton application, puis « ⋮ » → « Settings » → « Secrets ». Colle ces lignes en remplaçant le code, puis « Save » :
+
+```toml
+[email]
+expediteur   = "cmfredwilliamson@gmail.com"
+mot_de_passe = "abcd efgh ijkl mnop"
+destinataire = "cmfredwilliamson@gmail.com"
+```
+
+Ne mets jamais ce mot de passe dans un fichier envoyé sur GitHub : seuls les « Secrets » de Streamlit le gardent en sécurité. Sans ces secrets (par exemple quand l'application tourne sur ton ordinateur), aucun e-mail n'est envoyé.

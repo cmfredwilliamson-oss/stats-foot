@@ -14,9 +14,12 @@ import pandas as pd
 import streamlit as st
 
 import stats_core as sc
+from notifications import notifier_visite
 
 st.set_page_config(page_title="Stats & Prédictions Foot", page_icon="⚽", layout="wide",
                    initial_sidebar_state="collapsed")
+
+notifier_visite()   # e-mail à chaque nouvelle visite (si les secrets e-mail sont configurés)
 
 BLEU = "#2a78d6"                                   # série unique
 COULEURS_1X2 = ["#2a78d6", "#eb6834", "#1baf7a"]   # domicile / nul / extérieur
@@ -369,7 +372,7 @@ def page_stats(etat):
 
 
 def page_tickets(nom):
-    titre = {"Combiné": "combiné", "BTTS - les deux équipes marquent": "BTTS : les deux équipes marquent"}
+    titre = {"Combiné": "combiné", "BTTS - les deux équipes marquent": "les deux équipes marquent (BTTS)"}
     st.header(f"🎟️ Ticket {titre.get(nom, nom.lower())}")
     modeles = sc.modeles_par_championnat(M)
     parts = sc.parts_1re_periode(M)
@@ -621,7 +624,7 @@ def creer_page_ticket(nom):
     slug = "btts" if nom.startswith("BTTS") else (
         nom.lower().replace(" ", "-").replace(".", "").replace("é", "e").replace("è", "e"))
     page.__name__ = f"ticket_{slug.replace('-', '_')}"
-    titre = {"Combiné": "⭐ Combiné", "BTTS - les deux équipes marquent": "BTTS (les 2 équipes marquent)"}.get(nom, nom)
+    titre = {"Combiné": "⭐ Combiné", "BTTS - les deux équipes marquent": "Les deux équipes marquent (BTTS)"}.get(nom, nom)
     return st.Page(page, title=titre, url_path=f"ticket-{slug}")
 
 
