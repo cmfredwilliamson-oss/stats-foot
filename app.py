@@ -21,8 +21,9 @@ st.set_page_config(page_title="Stats & Prédictions Foot", page_icon="⚽", layo
 
 notifier_visite()   # e-mail à chaque nouvelle visite (si les secrets e-mail sont configurés)
 
-BLEU = "#2a78d6"                                   # série unique
-COULEURS_1X2 = ["#2a78d6", "#eb6834", "#1baf7a"]   # domicile / nul / extérieur
+BLEU = "#3987e5"                                   # série unique (bleu adapté au thème sombre)
+TEXTE_GRAPH = "#c3c2b7"                            # libellés des graphiques sur fond sombre
+COULEURS_1X2 = ["#3987e5", "#d95926", "#199e70"]   # domicile / nul / extérieur (thème sombre)
 
 # =========================================================
 # DÉFINITION DES ÉTATS DU NOTEBOOK
@@ -184,10 +185,10 @@ def graphique_barres(d, categorie, valeur, titre_valeur, n_max=25, domaine=(0, 1
         tooltip=[alt.Tooltip("cat:N", title="Nom"), alt.Tooltip("val:Q", title=titre_valeur, format=fmt)],
     )
     chart = ((base.mark_bar(color=BLEU, cornerRadiusEnd=4, height=16)
-              + base.mark_text(align="left", dx=4, color="#52514e", fontSize=11)
+              + base.mark_text(align="left", dx=4, color=TEXTE_GRAPH, fontSize=11)
                     .encode(text=alt.Text("val:Q", format=fmt)))
              .properties(height=max(160, 26 * len(d)))
-             .configure_axis(grid=False, labelColor="#52514e", titleColor="#52514e")
+             .configure_axis(grid=False, labelColor=TEXTE_GRAPH, titleColor=TEXTE_GRAPH, domainColor="#3a4a60", tickColor="#3a4a60")
              .configure_view(strokeWidth=0))
     st.altair_chart(chart, use_container_width=True)
 
@@ -222,7 +223,7 @@ def afficher(vue, stat, pct, nom_csv, key, label_graph):
 # =========================================================
 def page_etat(etat):
     num, titre, typ, ind, stat, pct, aide = etat
-    st.header(f"{num}. {titre}")
+    st.header(titre)
     if aide:
         st.caption(aide)
 
@@ -315,7 +316,7 @@ def page_etat(etat):
 
 def page_stats(etat):
     num, titre, niveau, sens, mesure = etat
-    st.header(f"{num}. {titre}")
+    st.header(titre)
     mot = "marqués" if sens == "for" else "encaissés"
     nom_mesure = "Moyenne" if mesure == "mean" else "Médiane"
     st.caption(f"{nom_mesure} des buts {mot} par match"
@@ -447,8 +448,8 @@ def afficher_ticket(t, nom, combine=False):
 
 
 def page_donnees():
-    st.header("Accueil · données chargées (états 1 à 3)")
-    st.caption("Paramètres, chargement et combinaison des championnats (cellules 1 à 3 du notebook).")
+    st.header("🏠 Accueil")
+    st.caption("Championnats chargés et ensemble des matchs joués.")
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Championnats", M["div"].nunique())
     c2.metric("Matchs joués", f"{len(M):,}".replace(",", " "))
@@ -546,7 +547,7 @@ def page_predictions():
                                          legend=None),
                          tooltip=[alt.Tooltip("issue:N", title="Issue"), alt.Tooltip("proba:Q", title="%", format=".0f")])
                  .properties(height=140)
-                 .configure_axis(grid=False, labelColor="#52514e", titleColor="#52514e")
+                 .configure_axis(grid=False, labelColor=TEXTE_GRAPH, titleColor=TEXTE_GRAPH, domainColor="#3a4a60", tickColor="#3a4a60")
                  .configure_view(strokeWidth=0))
         st.altair_chart(chart, use_container_width=True)
         k4, k5, k6, k7, k8 = st.columns(5)
@@ -608,14 +609,14 @@ def creer_page(etat):
     def page():
         page_etat(etat)
     page.__name__ = f"etat_{etat[0]}"
-    return st.Page(page, title=f"{etat[0]}. {COURTS[etat[0]]}", url_path=f"etat-{etat[0]}")
+    return st.Page(page, title=COURTS[etat[0]], url_path=f"etat-{etat[0]}")
 
 
 def creer_page_stats(etat):
     def page():
         page_stats(etat)
     page.__name__ = f"stats_{etat[0]}"
-    return st.Page(page, title=f"{etat[0]}. {COURTS[etat[0]]}", url_path=f"etat-{etat[0]}")
+    return st.Page(page, title=COURTS[etat[0]], url_path=f"etat-{etat[0]}")
 
 
 def creer_page_ticket(nom):
