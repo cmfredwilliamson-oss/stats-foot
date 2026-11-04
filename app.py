@@ -432,7 +432,8 @@ def page_classement():
 
 
 def page_tickets(nom):
-    titre = {"Combiné": "combiné", "BTTS - les deux équipes marquent": "les deux équipes marquent (BTTS)"}
+    titre = {"Combiné": "combiné", "BTTS - les deux équipes marquent": "les deux équipes marquent (BTTS)",
+             "12 Yes - victoire et les deux équipes marquent": "12 Yes : victoire et les deux équipes marquent"}
     st.header(f"🎟️ Ticket {titre.get(nom, nom.lower())}")
     modeles = sc.modeles_par_championnat(M)
     parts = sc.parts_1re_periode(M)
@@ -448,17 +449,17 @@ def page_tickets(nom):
     divs_dispo = sorted(set(fixtures["div"]) & set(M["div"]), key=lambda x: sc.noms.get(x, x))
     ss = st.session_state                     # réglages mémorisés d'un ticket à l'autre
     ss.setdefault("t_n", 10)
-    ss.setdefault("t_periode", "j7")
+    ss.setdefault("t_periode", "toutes")
     ss.setdefault("t_divs", divs_dispo)
     a, b, c = st.columns([1, 1, 2])
     n = a.number_input("Nombre de matchs", min_value=1, max_value=30, value=ss["t_n"], step=1,
-                       help="10 par défaut ; tu peux en ajouter jusqu'à 30.", key=f"w_n_{nom}")
+                       help="10 par défaut ; tu peux en ajouter jusqu'à 30 (dans la limite des matchs à venir disponibles).", key=f"w_n_{nom}")
     dates_dispo = sorted(fixtures["date"].dropna().unique())
     periodes = ["j1", "j3", "j7", "j14", "toutes"] + [pd.Timestamp(d).strftime("%Y-%m-%d") for d in dates_dispo]
     noms_periodes = {"j1": "Aujourd'hui et demain", "j3": "3 prochains jours", "j7": "7 prochains jours",
                      "j14": "14 prochains jours", "toutes": "Tous les matchs à venir"}
     if ss["t_periode"] not in periodes:
-        ss["t_periode"] = "j7"
+        ss["t_periode"] = "toutes"
     periode = b.selectbox("Période ou date", periodes, index=periodes.index(ss["t_periode"]), key=f"w_j_{nom}",
                           format_func=lambda x: noms_periodes.get(x) or libelle_date(pd.Timestamp(x)))
     divs = c.multiselect("Championnats", divs_dispo, default=[d for d in ss["t_divs"] if d in divs_dispo],
@@ -475,6 +476,11 @@ def page_tickets(nom):
         st.info("Aucun match à venir pour ces critères (période, championnats, minimum de matchs joués).")
         return
     st.caption(f"{len(pred)} matchs à venir analysés · équipes ayant joué au moins {MIN_MATCHES} matchs.")
+    if int(n) > len(pred):
+        st.info(f"Tu as demandé {int(n)} matchs, mais seulement **{len(pred)} matchs à venir** remplissent les "
+                "critères : le ticket ne peut pas en contenir plus. Pour en avoir davantage, choisis "
+                "« Tous les matchs à venir », ajoute des championnats, ou baisse le minimum de matchs joués "
+                "dans ⚙️ Paramètres. Les matchs du week-end sont généralement publiés en milieu de semaine.")
 
     if nom == "Combiné":
         t = sc.ticket_combine(pred, int(n))
@@ -485,6 +491,11 @@ def page_tickets(nom):
         st.caption("Les matchs où cet événement est le plus probable selon le modèle.")
         if nom == "Défaites":
             st.caption("« Défaite X » : l'équipe X perd le match (son adversaire gagne).")
+        if nom.startswith("12 Yes"):
+            st.caption("« 12 Yes » : l'équipe la plus forte du match gagne ET les deux équipes marquent "
+                       "(ex. 2-1, 3-1, 1-2). Plus exigeant qu'une simple victoire, donc probabilités plus basses.")
+        if nom == "Matchs nuls":
+            st.caption("Les matchs les plus équilibrés selon le modèle. Un nul dépasse rarement 30 à 35 % de probabilité.")
         if nom == "Scores exacts":
             st.caption("Un score exact reste un pari très incertain : même le plus probable dépasse "
                        "rarement 15 à 20 %.")
@@ -707,10 +718,11 @@ def creer_page_stats(etat):
 def creer_page_ticket(nom):
     def page():
         page_tickets(nom)
-    slug = "btts" if nom.startswith("BTTS") else (
+    slug = "btts" if nom.startswith("BTTS") else "12-yes" if nom.startswith("12 Yes") else (
         nom.lower().replace(" ", "-").replace(".", "").replace("é", "e").replace("è", "e"))
     page.__name__ = f"ticket_{slug.replace('-', '_')}"
-    titre = {"Combiné": "⭐ Combiné", "BTTS - les deux équipes marquent": "Les deux équipes marquent (BTTS)"}.get(nom, nom)
+    titre = {"Combiné": "⭐ Combiné", "BTTS - les deux équipes marquent": "Les deux équipes marquent (BTTS)",
+             "12 Yes - victoire et les deux équipes marquent": "12 Yes (victoire + les 2 marquent)"}.get(nom, nom)
     return st.Page(page, title=titre, url_path=f"ticket-{slug}")
 
 

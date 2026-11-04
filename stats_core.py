@@ -526,6 +526,10 @@ def predictions_detaillees(fixtures, modeles, parts, min_matches=0):
         if n_min < min_matches:
             continue
         p1h, p2h, peq = probas_periodes(p["xg_home"] + p["xg_away"], parts.get(r["div"], PART_1RE_DEFAUT))
+        mat = p["matrix"]
+        i, j = np.indices(mat.shape)
+        p_home_btts = mat[(i > j) & (j >= 1)].sum()      # domicile gagne ET les deux équipes marquent
+        p_away_btts = mat[(j > i) & (i >= 1)].sum()      # extérieur gagne ET les deux équipes marquent
         lignes.append({
             "date": r["date"], "time": r["time"], "div": r["div"], "league": r["league"],
             "home_team": r["home_team"], "away_team": r["away_team"],
@@ -534,6 +538,7 @@ def predictions_detaillees(fixtures, modeles, parts, min_matches=0):
             "p_home_scores": p["p_home_scores"], "p_away_scores": p["p_away_scores"],
             "p_over15": p["p_over15"], "p_over25": p["p_over25"], "p_btts": p["p_btts"],
             "p_1h": p1h, "p_2h": p2h, "p_eq": peq,
+            "p_home_btts": p_home_btts, "p_away_btts": p_away_btts,
             "score": p["top_scores"][0][1], "p_score": p["top_scores"][0][0],
             "odds_h": r["odds_h"], "odds_d": r["odds_d"], "odds_a": r["odds_a"],
             "matches_min": n_min,
@@ -567,6 +572,13 @@ def _defaite(r):
     return f"Défaite {r['away_team']}", r["p_home"], r["odds_h"]
 
 
+def _victoire_btts(r):
+    # « 12 Yes » : la meilleure équipe du match gagne ET les deux équipes marquent
+    if r["p_home"] >= r["p_away"]:
+        return f"Victoire {r['home_team']} et les deux équipes marquent", r["p_home_btts"], np.nan
+    return f"Victoire {r['away_team']} et les deux équipes marquent", r["p_away_btts"], np.nan
+
+
 def _marque(r):
     if r["p_home_scores"] >= r["p_away_scores"]:
         return f"{r['home_team']} marque", r["p_home_scores"], np.nan
@@ -576,8 +588,10 @@ def _marque(r):
 TICKETS = {
     "Victoires": _victoire,
     "Défaites": _defaite,
+    "Matchs nuls": lambda r: ("Match nul", r["p_draw"], r["odds_d"]),
     "Buts marqués": _marque,
     "BTTS - les deux équipes marquent": lambda r: ("Les deux équipes marquent (Yes)", r["p_btts"], np.nan),
+    "12 Yes - victoire et les deux équipes marquent": _victoire_btts,
     "Plus de buts en 1re période": lambda r: ("Plus de buts en 1re période", r["p_1h"], np.nan),
     "Plus de buts en 2e période": lambda r: ("Plus de buts en 2e période", r["p_2h"], np.nan),
     "Scores exacts": lambda r: (f"Score exact {r['score']}", r["p_score"], np.nan),
