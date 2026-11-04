@@ -20,10 +20,9 @@ Les onglets en haut de l'écran (avec menus déroulants) reprennent les **28 ét
 |---|---|
 | Accueil | 1-3. Données chargées (journal + tous les matchs) · Prédictions |
 | Buts dans le match | 4-11. BTTS, over 1.5 / 2.5 / 3.5 (par championnat et par équipe) |
-| Résultats | 12. Plus de victoires · 13. Plus de défaites · 14. Plus de matchs nuls |
 | Mi-temps | 15-20. Plus de buts en 2e / en 1re période, périodes égales (championnats et équipes) |
 | Buts marqués | 21-26. L'équipe marque au moins 1 / 2 / 3 / 4 buts, moins de 2, ne marque pas |
-| Forme | 27. Victoires, 28. Défaites et 41. Matchs nuls sur les 5 derniers matchs |
+| Forme | Victoires, défaites et matchs nuls sur la saison, puis sur les 5 derniers matchs |
 | Stats | 33-40. Moyennes et médianes de buts marqués et encaissés, par équipe et par championnat (total, domicile, extérieur) |
 | Tickets | Combiné, Victoires, Défaites, Buts marqués, BTTS (les 2 équipes marquent), Plus de buts en 1re / 2e période, Scores exacts, Over 1.5, Over 2.5 |
 | Buts encaissés | 29. Clean sheet (n'encaissent pas) · 30-32. Encaissent au moins 1 / 2 / 3 buts |

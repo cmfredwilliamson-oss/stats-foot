@@ -129,7 +129,7 @@ COURTS = {
     6: "Over 1.5 · championnats", 7: "Over 1.5 · équipes",
     8: "Over 2.5 · championnats", 9: "Over 2.5 · équipes",
     10: "Over 3.5 · championnats", 11: "Over 3.5 · équipes",
-    12: "Plus de victoires", 13: "Plus de défaites", 14: "Plus de matchs nuls",
+    12: "Victoires (saison)", 13: "Défaites (saison)", 14: "Matchs nuls (saison)",
     15: "2e > 1re période · champ.", 16: "2e > 1re période · équipes",
     17: "1re > 2e période · champ.", 18: "1re > 2e période · équipes",
     19: "Périodes égales · champ.", 20: "Périodes égales · équipes",
@@ -162,6 +162,28 @@ def charger_fixtures():
 # =========================================================
 # OUTILS D'AFFICHAGE
 # =========================================================
+JOURS_SEMAINE = ["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."]
+
+
+def aujourdhui():
+    """Date du jour à Brazzaville (le serveur Streamlit Cloud est en heure UTC)."""
+    return pd.Timestamp.now(tz="Africa/Brazzaville").normalize().tz_localize(None)
+
+
+def matchs_a_venir(fixtures):
+    """Ne garde que les matchs d'aujourd'hui et des jours suivants."""
+    if fixtures.empty:
+        return fixtures
+    return fixtures[fixtures["date"].notna() & (fixtures["date"] >= aujourdhui())]
+
+
+def libelle_date(d, nb=None):
+    j = aujourdhui()
+    jour = ("Aujourd'hui" if d == j else "Demain" if d == j + pd.Timedelta(days=1) else JOURS_SEMAINE[d.weekday()])
+    txt = f"{jour} {d.strftime('%d/%m/%Y')}"
+    return f"{txt} ({nb} matchs)" if nb is not None else txt
+
+
 def libelle(code):
     return f"{sc.noms.get(code, code)} ({code})"
 
@@ -381,24 +403,36 @@ def page_tickets(nom):
     if fixtures.empty:
         st.info("Aucun prochain match disponible pour le moment.")
         return
-    aujourd_hui = pd.Timestamp.today().normalize()
+    aujourd_hui = aujourdhui()
+    fixtures = matchs_a_venir(fixtures)
+    if fixtures.empty:
+        st.info("Aucun match à venir (aujourd'hui ou les jours suivants) pour le moment.")
+        return
     divs_dispo = sorted(set(fixtures["div"]) & set(M["div"]), key=lambda x: sc.noms.get(x, x))
     ss = st.session_state                     # réglages mémorisés d'un ticket à l'autre
     ss.setdefault("t_n", 10)
-    ss.setdefault("t_jours", 7)
+    ss.setdefault("t_periode", "j7")
     ss.setdefault("t_divs", divs_dispo)
     a, b, c = st.columns([1, 1, 2])
     n = a.number_input("Nombre de matchs", min_value=1, max_value=30, value=ss["t_n"], step=1,
                        help="10 par défaut ; tu peux en ajouter jusqu'à 30.", key=f"w_n_{nom}")
-    jours = b.selectbox("Période", [3, 7, 14, 0], index=[3, 7, 14, 0].index(ss["t_jours"]), key=f"w_j_{nom}",
-                        format_func=lambda x: "Tous les matchs à venir" if x == 0 else f"{x} prochains jours")
+    dates_dispo = sorted(fixtures["date"].dropna().unique())
+    periodes = ["j1", "j3", "j7", "j14", "toutes"] + [pd.Timestamp(d).strftime("%Y-%m-%d") for d in dates_dispo]
+    noms_periodes = {"j1": "Aujourd'hui et demain", "j3": "3 prochains jours", "j7": "7 prochains jours",
+                     "j14": "14 prochains jours", "toutes": "Tous les matchs à venir"}
+    if ss["t_periode"] not in periodes:
+        ss["t_periode"] = "j7"
+    periode = b.selectbox("Période ou date", periodes, index=periodes.index(ss["t_periode"]), key=f"w_j_{nom}",
+                          format_func=lambda x: noms_periodes.get(x) or libelle_date(pd.Timestamp(x)))
     divs = c.multiselect("Championnats", divs_dispo, default=[d for d in ss["t_divs"] if d in divs_dispo],
                          format_func=libelle, key=f"w_d_{nom}")
-    ss["t_n"], ss["t_jours"], ss["t_divs"] = n, jours, divs
+    ss["t_n"], ss["t_periode"], ss["t_divs"] = n, periode, divs
 
-    fx = fixtures[fixtures["div"].isin(divs) & (fixtures["date"] >= aujourd_hui)]
-    if jours:
-        fx = fx[fx["date"] <= aujourd_hui + pd.Timedelta(days=jours)]
+    fx = fixtures[fixtures["div"].isin(divs)]
+    if periode.startswith("j"):                                   # fenêtre glissante à partir d'aujourd'hui
+        fx = fx[fx["date"] <= aujourd_hui + pd.Timedelta(days=int(periode[1:]))]
+    elif periode != "toutes":                                     # une date précise
+        fx = fx[fx["date"] == pd.Timestamp(periode)]
     pred = sc.predictions_detaillees(fx, modeles, parts, MIN_MATCHES)
     if pred.empty:
         st.info("Aucun match à venir pour ces critères (période, championnats, minimum de matchs joués).")
@@ -492,20 +526,34 @@ def page_predictions():
     sous = st.tabs(["📅 Prochains matchs", "🎯 Match au choix"])
 
     with sous[0]:
-        fixtures = charger_fixtures()
+        fixtures = matchs_a_venir(charger_fixtures())          # uniquement aujourd'hui et les jours suivants
         pred = (sc.predire_prochains_matchs(fixtures[fixtures["div"].isin(M["div"].unique())], modeles)
                 if not fixtures.empty else pd.DataFrame())
         if pred.empty:
-            st.info("Aucun prochain match disponible pour les championnats chargés. Utilise « Match au choix ».")
+            st.info("Aucun match à venir (aujourd'hui ou les jours suivants) pour les championnats chargés. "
+                    "Utilise « Match au choix ».")
         else:
-            a, b = st.columns(2)
-            lig = a.selectbox("Championnat", ["Tous les championnats"] + sorted(pred["div"].unique()),
+            a, b, c = st.columns([2, 2, 1.5])
+            nb_par_date = pred.groupby("date").size()
+            dates = ["toutes"] + list(nb_par_date.index)
+            choix_date = a.selectbox(
+                "Date", dates, key="date_pred",
+                format_func=lambda d: f"Toutes les dates à venir ({len(pred)} matchs)" if isinstance(d, str)
+                else libelle_date(d, int(nb_par_date[d])))
+            p = pred if isinstance(choix_date, str) else pred[pred["date"] == choix_date]
+            lig = b.selectbox("Championnat", ["Tous les championnats"] + sorted(p["div"].unique()),
                               format_func=lambda x: x if x.startswith("Tous") else libelle(x), key="lig_pred")
-            tris = {"Date": "date", "Victoire domicile": "%_home", "Victoire extérieur": "%_away",
+            tris = {"Date et heure": "date", "Victoire domicile": "%_home", "Victoire extérieur": "%_away",
                     "BTTS": "%_btts", "Over 2.5": "%_over_2_5", "Over 1.5": "%_over_1_5"}
-            tri = tris[b.selectbox("Trier par", list(tris), key="tri_pred")]
-            p = pred if lig.startswith("Tous") else pred[pred["div"] == lig]
-            p = p.sort_values(tri, ascending=(tri == "date"))
+            tri = tris[c.selectbox("Trier par", list(tris), key="tri_pred")]
+            p = p if lig.startswith("Tous") else p[p["div"] == lig]
+            p = (p.sort_values(["date", "time"]) if tri == "date" else p.sort_values(tri, ascending=False))
+            if len(p) == 0:
+                st.caption("Aucun match pour ce filtre.")
+            elif p["date"].min() == p["date"].max():
+                st.caption(f"{len(p)} matchs · {libelle_date(p['date'].min())}")
+            else:
+                st.caption(f"{len(p)} matchs · du {libelle_date(p['date'].min())} au {libelle_date(p['date'].max())}")
             vue = pd.DataFrame({
                 "Date": p["date"].dt.strftime("%d/%m/%Y"), "Heure": p["time"], "Championnat": p["league"],
                 "Domicile": p["home_team"], "Extérieur": p["away_team"],
@@ -637,11 +685,10 @@ menu = {
     "": [st.Page(page_donnees, title="Accueil", icon="🏠", url_path="donnees", default=True),
          st.Page(page_predictions, title="Prédictions", icon="🔮", url_path="predictions")],
     "🎯 Buts du match": section(range(4, 12)),
-    "🏁 Résultats": section(range(12, 15)),
     "⏱️ Mi-temps": section(range(15, 21)),
     "⚽ Marqués": section(range(21, 27)),
     "🛡️ Encaissés": [creer_page(e) for e in BONUS],
-    "📈 Forme": section([27, 28, 41]),
+    "📈 Forme": section([12, 13, 14, 27, 28, 41]),   # saison complète puis 5 derniers matchs
     "📊 Stats": [creer_page_stats(e) for e in ETATS_STATS],
     "🎟️ Tickets": [creer_page_ticket(x) for x in ["Combiné"] + list(sc.TICKETS)],   # dernier onglet
 }
