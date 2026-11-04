@@ -617,3 +617,33 @@ def ticket_combine(pred, n=10):
             choisis.append(r)
             matchs_utilises.add(r["match"])
     return pd.DataFrame(choisis).reset_index(drop=True)
+
+
+# =========================================================
+# 8. CLASSEMENT D'UN CHAMPIONNAT
+# =========================================================
+def classement(long, div, n_forme=5):
+    """
+    Classement calculé à partir des résultats : 3 pts la victoire, 1 le nul.
+    Départage : points, différence de buts, buts marqués, puis ordre alphabétique.
+    """
+    d = long[long["div"] == div]
+    if d.empty:
+        return pd.DataFrame()
+    t = d.groupby("team").agg(
+        J=("result", "size"),
+        G=("result", lambda s: (s == "W").sum()),
+        N=("result", lambda s: (s == "D").sum()),
+        P=("result", lambda s: (s == "L").sum()),
+        BP=("goals_for", "sum"),
+        BC=("goals_against", "sum"),
+    ).reset_index()
+    t[["BP", "BC"]] = t[["BP", "BC"]].astype(int)
+    t["Diff"] = t["BP"] - t["BC"]
+    t["Pts"] = 3 * t["G"] + t["N"]
+    forme = (d.sort_values("date", kind="stable").groupby("team")["result"]
+              .apply(lambda s: "".join(s.tail(n_forme))))
+    t["Forme"] = t["team"].map(forme)
+    t = t.sort_values(["Pts", "Diff", "BP", "team"], ascending=[False, False, False, True])
+    t.insert(0, "Rang", range(1, len(t) + 1))
+    return t.rename(columns={"team": "Équipe"}).reset_index(drop=True)

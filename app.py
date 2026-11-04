@@ -394,6 +394,43 @@ def page_stats(etat):
     bouton_csv(vue, f"etat_{num}.csv", f"csv_{num}")
 
 
+def page_classement():
+    st.header("🏆 Classement des championnats")
+    st.caption("Classement calculé à partir des résultats chargés : 3 points la victoire, 1 le nul. "
+               "Départage : points, différence de buts, buts marqués.")
+    divs = sorted(LONG["div"].unique(), key=lambda c: sc.noms.get(c, c))
+    defaut = divs.index("F1") if "F1" in divs else 0
+    a, b = st.columns([3, 2])
+    div = a.selectbox("Championnat", divs, index=defaut, format_func=libelle, key="lig_classement")
+    vue_lieu = b.radio("Matchs pris en compte", ["Tous", "Domicile", "Extérieur"], horizontal=True,
+                       key="lieu_classement")
+    base = LONG if vue_lieu == "Tous" else LONG[LONG["venue"] == ("H" if vue_lieu == "Domicile" else "A")]
+    t = sc.classement(base, div)
+    if t.empty:
+        st.warning("Pas de match joué pour ce championnat.")
+        return
+    saison = M.loc[M["div"] == div, "season"].iloc[0]
+    st.caption(f"Saison {saison} · {len(t)} équipes · {int(t['J'].sum() / (1 if vue_lieu != 'Tous' else 2))} matchs · "
+               "Forme : 5 derniers matchs, du plus ancien au plus récent (W = victoire, D = nul, L = défaite).")
+    st.dataframe(
+        t, hide_index=True, use_container_width=True, height=min(38 + 35 * len(t), 900),
+        column_config={
+            "Rang": st.column_config.NumberColumn("Rang", width="small"),
+            "J": st.column_config.NumberColumn("J", help="Matchs joués"),
+            "G": st.column_config.NumberColumn("G", help="Victoires"),
+            "N": st.column_config.NumberColumn("N", help="Matchs nuls"),
+            "P": st.column_config.NumberColumn("P", help="Défaites"),
+            "BP": st.column_config.NumberColumn("BP", help="Buts marqués"),
+            "BC": st.column_config.NumberColumn("BC", help="Buts encaissés"),
+            "Diff": st.column_config.NumberColumn("Diff", help="Différence de buts", format="%+d"),
+            "Pts": st.column_config.NumberColumn("Pts", help="Points"),
+        })
+    st.caption("Ce classement peut différer du classement officiel : pénalités de points, départage par "
+               "confrontations directes, ou formats particuliers (play-offs en Belgique et en Écosse, "
+               "conférences en MLS, groupes en Argentine).")
+    bouton_csv(t, f"classement_{div}.csv", "csv_classement")
+
+
 def page_tickets(nom):
     titre = {"Combiné": "combiné", "BTTS - les deux équipes marquent": "les deux équipes marquent (BTTS)"}
     st.header(f"🎟️ Ticket {titre.get(nom, nom.lower())}")
@@ -556,10 +593,10 @@ def page_predictions():
                 st.caption(f"{len(p)} matchs · du {libelle_date(p['date'].min())} au {libelle_date(p['date'].max())}")
             vue = pd.DataFrame({
                 "Date": p["date"].dt.strftime("%d/%m/%Y"), "Heure": p["time"], "Championnat": p["league"],
-                "Domicile": p["home_team"], "Extérieur": p["away_team"],
+                "Domicile": p["home_team"], "Extérieur": p["away_team"], "Score probable": p["likely_score"],
                 "% victoire dom.": p["%_home"], "% nul": p["%_draw"], "% victoire ext.": p["%_away"],
                 "% BTTS": p["%_btts"], "% over 1.5": p["%_over_1_5"], "% over 2.5": p["%_over_2_5"],
-                "% over 3.5": p["%_over_3_5"], "Score probable": p["likely_score"],
+                "% over 3.5": p["%_over_3_5"],
                 "Buts attendus": p["xg_home"].round(1).astype(str) + " - " + p["xg_away"].round(1).astype(str),
                 "Cote 1": p["odds_h"], "Cote N": p["odds_d"], "Cote 2": p["odds_a"]})
             cfg = {c: col_pct(c) for c in vue.columns if c.startswith("%")}
@@ -689,7 +726,8 @@ menu = {
     "⚽ Marqués": section(range(21, 27)),
     "🛡️ Encaissés": [creer_page(e) for e in BONUS],
     "📈 Forme": section([12, 13, 14, 27, 28, 41]),   # saison complète puis 5 derniers matchs
-    "📊 Stats": [creer_page_stats(e) for e in ETATS_STATS],
+    "📊 Stats": [st.Page(page_classement, title="Classement des championnats", icon="🏆",
+                         url_path="classement")] + [creer_page_stats(e) for e in ETATS_STATS],
     "🎟️ Tickets": [creer_page_ticket(x) for x in ["Combiné"] + list(sc.TICKETS)],   # dernier onglet
 }
 
