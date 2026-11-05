@@ -986,9 +986,7 @@ PAGE_ABONNEMENT = st.Page(page_abonnement, title=T("Abonnement"), icon="💳", u
 PAGES_TICKETS = [creer_page_ticket(x) for x in ["Combiné"] + list(sc.TICKETS)]
 PAGE_TICKETS_DEFAUT = PAGES_TICKETS[0]
 menu = {
-    "": [st.Page(page_donnees, title=T("Accueil"), icon="🏠", url_path="donnees", default=True),
-         st.Page(page_predictions, title=T("Prédictions"), icon="🔮", url_path="predictions"),
-         PAGE_ABONNEMENT],
+    "": [st.Page(page_donnees, title=T("Accueil"), icon="🏠", url_path="donnees", default=True)],
     T("🎯 Buts du match"): section(range(4, 12)),
     T("⏱️ Mi-temps"): section(range(15, 21)),
     T("⚽ Marqués"): section(range(21, 27)),
@@ -996,7 +994,11 @@ menu = {
     T("📈 Forme"): section([12, 13, 14, 27, 28, 41]) + [creer_page(e) for e in BONUS],
     T("📊 Stats"): [st.Page(page_classement, title=T("Classement des championnats"), icon="🏆",
                          url_path="classement")] + [creer_page_stats(e) for e in ETATS_STATS],
-    T("🎟️ Tickets"): PAGES_TICKETS,   # dernier onglet
+    # Les 3 derniers onglets : Prédictions, Tickets, Abonnement (Streamlit place toujours les pages
+    # isolées en premier : ces onglets sont donc des sections d'une seule page)
+    T("🔮 Prédictions"): [st.Page(page_predictions, title=T("Prédictions"), icon="🔮", url_path="predictions")],
+    T("🎟️ Tickets"): PAGES_TICKETS,
+    T("💳 Abonnement"): [PAGE_ABONNEMENT],
 }
 
 st.navigation(menu, position="top").run()
