@@ -992,8 +992,8 @@ menu = {
     T("🎯 Buts du match"): section(range(4, 12)),
     T("⏱️ Mi-temps"): section(range(15, 21)),
     T("⚽ Marqués"): section(range(21, 27)),
-    T("🛡️ Encaissés"): [creer_page(e) for e in BONUS],
-    T("📈 Forme"): section([12, 13, 14, 27, 28, 41]),   # saison complète puis 5 derniers matchs
+    # Forme : saison complète, 5 derniers matchs, puis les états « encaissés » (clean sheet, buts encaissés)
+    T("📈 Forme"): section([12, 13, 14, 27, 28, 41]) + [creer_page(e) for e in BONUS],
     T("📊 Stats"): [st.Page(page_classement, title=T("Classement des championnats"), icon="🏆",
                          url_path="classement")] + [creer_page_stats(e) for e in ETATS_STATS],
     T("🎟️ Tickets"): PAGES_TICKETS,   # dernier onglet

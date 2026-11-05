@@ -22,10 +22,9 @@ Les onglets en haut de l'écran (avec menus déroulants) reprennent les **28 ét
 | Buts dans le match | 4-11. BTTS, over 1.5 / 2.5 / 3.5 (par championnat et par équipe) |
 | Mi-temps | 15-20. Plus de buts en 2e / en 1re période, périodes égales (championnats et équipes) |
 | Buts marqués | 21-26. L'équipe marque au moins 1 / 2 / 3 / 4 buts, moins de 2, ne marque pas |
-| Forme | Victoires, défaites et matchs nuls sur la saison, puis sur les 5 derniers matchs |
+| Forme | Victoires, défaites et matchs nuls sur la saison, puis sur les 5 derniers matchs · 29. Clean sheet (n'encaissent pas) · 30-32. Encaissent au moins 1 / 2 / 3 buts |
 | Stats | Classement des championnats (total, domicile, extérieur) · 33-40. Moyennes et médianes de buts marqués et encaissés, par équipe et par championnat (total, domicile, extérieur) |
 | Tickets | Combiné, Victoires, Défaites, Matchs nuls, Buts marqués, BTTS (les 2 équipes marquent), 12 Yes (victoire + les 2 marquent), Plus de buts en 1re / 2e période, Scores exacts, Over 1.5, Over 2.5 |
-| Buts encaissés | 29. Clean sheet (n'encaissent pas) · 30-32. Encaissent au moins 1 / 2 / 3 buts |
 
 Chaque état affiche les colonnes utiles : **Rang, Équipe, Championnat, Matchs joués, la stat de l'état et son pourcentage**. Les états 12 à 14 montrent en plus victoires, nuls et défaites côte à côte. Chaque tableau s'exporte en CSV. Sur les états par équipe, un filtre « Nombre d'équipes » (20 par défaut) choisit combien d'équipes afficher. Le rang est continu (1, 2, 3…), sans ex aequo : à pourcentage égal, l'équipe avec le plus de matchs passe devant, puis l'ordre alphabétique départage.
 
