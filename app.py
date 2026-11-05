@@ -543,8 +543,10 @@ def page_abonnement():
             except ValueError as e:
                 st.error(str(e))
                 return
-            except Exception:
+            except Exception as e:
                 st.error("Service de paiement momentanément indisponible. Réessaie dans un instant.")
+                if CFG_AB["sandbox"]:
+                    st.caption(f"Détail technique (visible en mode test seulement) : {e}")
                 return
             if statut == "REJECTED":
                 st.error(f"Paiement refusé : {raison}")

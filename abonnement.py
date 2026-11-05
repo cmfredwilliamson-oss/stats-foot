@@ -57,11 +57,11 @@ def config():
     p, s, a = _section("pawapay"), _section("supabase"), _section("abonnement")
     return {
         "actif": bool(p.get("token") and s.get("url") and s.get("cle")),
-        "token": p.get("token", ""),
+        "token": str(p.get("token", "")).strip(),
         "api": API.get(str(p.get("environnement", "sandbox")).lower(), API["sandbox"]),
         "sandbox": str(p.get("environnement", "sandbox")).lower() != "production",
-        "sb_url": str(s.get("url", "")).rstrip("/"),
-        "sb_cle": s.get("cle", ""),
+        "sb_url": str(s.get("url", "")).strip().rstrip("/").removesuffix("/rest/v1"),
+        "sb_cle": str(s.get("cle", "")).strip(),
         "prix": int(a.get("prix_xaf", PRIX_DEFAUT)),
         "duree": int(a.get("duree_jours", DUREE_DEFAUT)),
         "code_admin": str(a.get("code_admin", "")).strip(),
@@ -123,11 +123,14 @@ def statut_paiement(cfg, deposit_id):
 # SUPABASE (API REST)
 # =========================================================
 def _sb(cfg, methode, params=None, json=None):
-    h = {"apikey": cfg["sb_cle"], "Authorization": f"Bearer {cfg['sb_cle']}",
-         "Content-Type": "application/json", "Prefer": "return=representation"}
+    cle = cfg["sb_cle"]
+    h = {"apikey": cle, "Content-Type": "application/json", "Prefer": "return=representation"}
+    if cle.startswith("eyJ"):                    # ancienne clé service_role (JWT) ; les nouvelles clés sb_secret_ passent seulement par apikey
+        h["Authorization"] = f"Bearer {cle}"
     r = requests.request(methode, f"{cfg['sb_url']}/rest/v1/{TABLE}", params=params, json=json,
                          headers=h, timeout=20)
-    r.raise_for_status()
+    if r.status_code >= 400:
+        raise RuntimeError(f"Supabase {r.status_code} : {r.text[:300]}")
     return r.json() if r.content else []
 
 
