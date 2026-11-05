@@ -547,56 +547,61 @@ def predictions_detaillees(fixtures, modeles, parts, min_matches=0):
 
 
 def _selection(pred, fn_choix, n):
-    """Applique fn_choix à chaque match -> (pronostic, proba, cote marché) puis garde les n meilleurs."""
+    """
+    Applique fn_choix à chaque match -> (modèle de texte, équipe/score, proba, cote marché)
+    puis garde les n meilleurs. Le modèle (« Victoire {e} ») permet la traduction dans l'application.
+    """
     if pred.empty:
         return pd.DataFrame()
     rows = []
     for _, r in pred.iterrows():
-        prono, proba, cote = fn_choix(r)
+        modele, e, proba, cote = fn_choix(r)
         rows.append({"date": r["date"], "time": r["time"], "league": r["league"], "match": r["match"],
-                     "pick": prono, "proba": proba, "market_odds": cote})
+                     "pick": modele.format(e=e), "pick_modele": modele, "pick_e": e,
+                     "proba": proba, "market_odds": cote})
     t = pd.DataFrame(rows).sort_values("proba", ascending=False).head(n).reset_index(drop=True)
     return t
 
 
 def _victoire(r):
     if r["p_home"] >= r["p_away"]:
-        return f"Victoire {r['home_team']}", r["p_home"], r["odds_h"]
-    return f"Victoire {r['away_team']}", r["p_away"], r["odds_a"]
+        return "Victoire {e}", r["home_team"], r["p_home"], r["odds_h"]
+    return "Victoire {e}", r["away_team"], r["p_away"], r["odds_a"]
 
 
 def _defaite(r):
     # l'équipe la plus susceptible de perdre dans le match
     if r["p_away"] >= r["p_home"]:
-        return f"Défaite {r['home_team']}", r["p_away"], r["odds_a"]
-    return f"Défaite {r['away_team']}", r["p_home"], r["odds_h"]
+        return "Défaite {e}", r["home_team"], r["p_away"], r["odds_a"]
+    return "Défaite {e}", r["away_team"], r["p_home"], r["odds_h"]
 
 
 def _victoire_btts(r):
     # « 12 Yes » : la meilleure équipe du match gagne ET les deux équipes marquent
+    m = "Victoire {e} et les deux équipes marquent"
     if r["p_home"] >= r["p_away"]:
-        return f"Victoire {r['home_team']} et les deux équipes marquent", r["p_home_btts"], np.nan
-    return f"Victoire {r['away_team']} et les deux équipes marquent", r["p_away_btts"], np.nan
+        return m, r["home_team"], r["p_home_btts"], np.nan
+    return m, r["away_team"], r["p_away_btts"], np.nan
 
 
 def _marque(r):
     if r["p_home_scores"] >= r["p_away_scores"]:
-        return f"{r['home_team']} marque", r["p_home_scores"], np.nan
-    return f"{r['away_team']} marque", r["p_away_scores"], np.nan
+        return "{e} marque", r["home_team"], r["p_home_scores"], np.nan
+    return "{e} marque", r["away_team"], r["p_away_scores"], np.nan
 
 
 TICKETS = {
     "Victoires": _victoire,
     "Défaites": _defaite,
-    "Matchs nuls": lambda r: ("Match nul", r["p_draw"], r["odds_d"]),
+    "Matchs nuls": lambda r: ("Match nul", "", r["p_draw"], r["odds_d"]),
     "Buts marqués": _marque,
-    "BTTS - les deux équipes marquent": lambda r: ("Les deux équipes marquent (Yes)", r["p_btts"], np.nan),
+    "BTTS - les deux équipes marquent": lambda r: ("Les deux équipes marquent (Yes)", "", r["p_btts"], np.nan),
     "12 Yes - victoire et les deux équipes marquent": _victoire_btts,
-    "Plus de buts en 1re période": lambda r: ("Plus de buts en 1re période", r["p_1h"], np.nan),
-    "Plus de buts en 2e période": lambda r: ("Plus de buts en 2e période", r["p_2h"], np.nan),
-    "Scores exacts": lambda r: (f"Score exact {r['score']}", r["p_score"], np.nan),
-    "Over 1.5 buts": lambda r: ("Plus de 1.5 buts", r["p_over15"], np.nan),
-    "Over 2.5 buts": lambda r: ("Plus de 2.5 buts", r["p_over25"], np.nan),
+    "Plus de buts en 1re période": lambda r: ("Plus de buts en 1re période", "", r["p_1h"], np.nan),
+    "Plus de buts en 2e période": lambda r: ("Plus de buts en 2e période", "", r["p_2h"], np.nan),
+    "Scores exacts": lambda r: ("Score exact {e}", r["score"], r["p_score"], np.nan),
+    "Over 1.5 buts": lambda r: ("Plus de 1.5 buts", "", r["p_over15"], np.nan),
+    "Over 2.5 buts": lambda r: ("Plus de 2.5 buts", "", r["p_over25"], np.nan),
 }
 
 

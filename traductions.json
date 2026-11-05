@@ -1,0 +1,1181 @@
+{
+ " La médiane est la valeur du milieu : la moitié des matchs sont au-dessus, la moitié en dessous.": {
+  "en": " The median is the middle value: half of the matches are above it, half below."
+ },
+ " et par équipe, sur tous les matchs du championnat.": {
+  "en": " and per team, across all matches in the league."
+ },
+ "### Ton code d'accès : `{c}`": {
+  "en": "### Your access code: `{c}`"
+ },
+ "### ⚽ Stats & Prédictions Foot": {
+  "en": "### ⚽ Football Stats & Predictions"
+ },
+ "% 1re > 2e": {
+  "en": "% 1st > 2nd"
+ },
+ "% 2e > 1re": {
+  "en": "% 2nd > 1st"
+ },
+ "% au moins 1 but": {
+  "en": "% at least 1 goal"
+ },
+ "% au moins 1 but encaissé": {
+  "en": "% at least 1 goal conceded"
+ },
+ "% au moins 2 buts": {
+  "en": "% at least 2 goals"
+ },
+ "% au moins 2 buts encaissés": {
+  "en": "% at least 2 goals conceded"
+ },
+ "% au moins 3 buts": {
+  "en": "% at least 3 goals"
+ },
+ "% au moins 3 buts encaissés": {
+  "en": "% at least 3 goals conceded"
+ },
+ "% au moins 4 buts": {
+  "en": "% at least 4 goals"
+ },
+ "% clean sheet": {
+  "en": "% clean sheet"
+ },
+ "% défaites": {
+  "en": "% losses"
+ },
+ "% moins de 2 buts": {
+  "en": "% under 2 goals"
+ },
+ "% nul": {
+  "en": "% draw"
+ },
+ "% nuls": {
+  "en": "% draws"
+ },
+ "% périodes égales": {
+  "en": "% equal halves"
+ },
+ "% sans marquer": {
+  "en": "% failed to score"
+ },
+ "% victoire dom.": {
+  "en": "% home win"
+ },
+ "% victoire ext.": {
+  "en": "% away win"
+ },
+ "% victoires": {
+  "en": "% wins"
+ },
+ "(dom.)": {
+  "en": "(home)"
+ },
+ "(ext.)": {
+  "en": "(away)"
+ },
+ "({n} matchs)": {
+  "en": "({n} matches)"
+ },
+ "**Déjà abonné ? Connecte-toi**": {
+  "en": "**Already subscribed? Log in**"
+ },
+ "**Pas encore abonné ?**": {
+  "en": "**Not subscribed yet?**"
+ },
+ "**Scores les plus probables**": {
+  "en": "**Most likely scores**"
+ },
+ "**{e} marque** : {p} %": {
+  "en": "**{e} scores**: {p} %"
+ },
+ "1. Choisis ton pays et saisis ton numéro Mobile Money.\n2. Une demande de paiement arrive sur ton téléphone : valide-la avec ton **code PIN**.\n3. Ton **code d'accès** s'affiche ici : garde-le pour te reconnecter.": {
+  "en": "1. Choose your country and enter your Mobile Money number.\n2. A payment request arrives on your phone: approve it with your **PIN code**.\n3. Your **access code** appears here: keep it to log in again."
+ },
+ "10 par défaut ; tu peux en ajouter jusqu'à 30 (dans la limite des matchs à venir disponibles).": {
+  "en": "10 by default; you can add up to 30 (within the limit of available upcoming matches)."
+ },
+ "12 Yes (victoire + les 2 marquent)": {
+  "en": "12 Yes (win + both teams score)"
+ },
+ "12 Yes - victoire et les deux équipes marquent": {
+  "en": "12 Yes - win and both teams score"
+ },
+ "14 prochains jours": {
+  "en": "Next 14 days"
+ },
+ "1er : {x}": {
+  "en": "1st: {x}"
+ },
+ "1re > 2e période · champ.": {
+  "en": "1st > 2nd half · leagues"
+ },
+ "1re > 2e période · équipes": {
+  "en": "1st > 2nd half · teams"
+ },
+ "2627 = 2026-27, 2526 = 2025-26": {
+  "en": "2627 = 2026-27, 2526 = 2025-26"
+ },
+ "2e > 1re période · champ.": {
+  "en": "2nd > 1st half · leagues"
+ },
+ "2e > 1re période · équipes": {
+  "en": "2nd > 1st half · teams"
+ },
+ "3 prochains jours": {
+  "en": "Next 3 days"
+ },
+ "7 prochains jours": {
+  "en": "Next 7 days"
+ },
+ "Abonnement": {
+  "en": "Subscription"
+ },
+ "Accueil": {
+  "en": "Home"
+ },
+ "Accès administrateur actif.": {
+  "en": "Administrator access active."
+ },
+ "Annuler": {
+  "en": "Cancel"
+ },
+ "Attaque > 1 : marque plus que la moyenne du championnat. Défense > 1 : encaisse plus que la moyenne.": {
+  "en": "Attack > 1: scores more than the league average. Defence > 1: concedes more than the average."
+ },
+ "Au moins 2 buts dans le match (over 1.5) par championnat": {
+  "en": "At least 2 goals in the match (over 1.5) by league"
+ },
+ "Au moins 2 buts dans le match (over 1.5) par équipe": {
+  "en": "At least 2 goals in the match (over 1.5) by team"
+ },
+ "Au moins 3 buts dans le match (over 2.5) par championnat": {
+  "en": "At least 3 goals in the match (over 2.5) by league"
+ },
+ "Au moins 3 buts dans le match (over 2.5) par équipe": {
+  "en": "At least 3 goals in the match (over 2.5) by team"
+ },
+ "Au moins 4 buts dans le match (over 3.5) par championnat": {
+  "en": "At least 4 goals in the match (over 3.5) by league"
+ },
+ "Au moins 4 buts dans le match (over 3.5) par équipe": {
+  "en": "At least 4 goals in the match (over 3.5) by team"
+ },
+ "Au total, la moyenne de buts encaissés d'un championnat est égale à sa moyenne de buts marqués (chaque but marqué est encaissé par l'adversaire). La différence se voit à domicile / à l'extérieur.": {
+  "en": "Overall, a league's average goals conceded equals its average goals scored (every goal scored is conceded by the opponent). The difference shows at home / away."
+ },
+ "Aucun match pour ce filtre.": {
+  "en": "No match for this filter."
+ },
+ "Aucun match à venir (aujourd'hui ou les jours suivants) pour le moment.": {
+  "en": "No upcoming match (today or the following days) at the moment."
+ },
+ "Aucun match à venir (aujourd'hui ou les jours suivants) pour les championnats chargés. Utilise « Match au choix ».": {
+  "en": "No upcoming match (today or the following days) for the loaded leagues. Use « Custom match »."
+ },
+ "Aucun match à venir pour ces critères (période, championnats, minimum de matchs joués).": {
+  "en": "No upcoming match for these criteria (period, leagues, minimum matches played)."
+ },
+ "Aucun pays n'est ouvert aux paiements sur ce compte pawaPay pour le moment.": {
+  "en": "No country is open for payments on this pawaPay account at the moment."
+ },
+ "Aucun prochain match disponible pour le moment.": {
+  "en": "No upcoming match available at the moment."
+ },
+ "Aucune donnée n'a pu être chargée. Vérifie ta connexion internet, la saison et les championnats choisis.": {
+  "en": "No data could be loaded. Check your internet connection, the season and the selected leagues."
+ },
+ "Aucune donnée ne remplit les conditions (essaie de baisser le minimum de matchs).": {
+  "en": "No data meets the conditions (try lowering the minimum number of matches)."
+ },
+ "Aucune équipe ne remplit les conditions (essaie de baisser le minimum de matchs).": {
+  "en": "No team meets the conditions (try lowering the minimum number of matches)."
+ },
+ "Aucune équipe.": {
+  "en": "No team."
+ },
+ "Aujourd'hui": {
+  "en": "Today"
+ },
+ "Aujourd'hui et demain": {
+  "en": "Today and tomorrow"
+ },
+ "BC": {
+  "en": "GA"
+ },
+ "BP": {
+  "en": "GF"
+ },
+ "BTTS - les deux équipes marquent": {
+  "en": "BTTS - both teams score"
+ },
+ "BTTS par championnat": {
+  "en": "BTTS by league"
+ },
+ "BTTS par équipe": {
+  "en": "BTTS by team"
+ },
+ "BTTS · championnats": {
+  "en": "BTTS · leagues"
+ },
+ "BTTS · équipes": {
+  "en": "BTTS · teams"
+ },
+ "Buts attendus": {
+  "en": "Expected goals"
+ },
+ "Buts dom.": {
+  "en": "Home goals"
+ },
+ "Buts encaissés": {
+  "en": "Goals conceded"
+ },
+ "Buts encaissés (total)": {
+  "en": "Goals conceded (total)"
+ },
+ "Buts ext.": {
+  "en": "Away goals"
+ },
+ "Buts marqués": {
+  "en": "Goals scored"
+ },
+ "Buts marqués (total)": {
+  "en": "Goals scored (total)"
+ },
+ "Ce classement peut différer du classement officiel : pénalités de points, départage par confrontations directes, ou formats particuliers (play-offs en Belgique et en Écosse, conférences en MLS, groupes en Argentine).": {
+  "en": "This table may differ from the official one: point deductions, head-to-head tie-breakers, or special formats (play-offs in Belgium and Scotland, conferences in MLS, groups in Argentina)."
+ },
+ "Ce sont des estimations statistiques, pas des certitudes : blessures, rotations, météo ou enjeu ne sont pas pris en compte. À utiliser avec prudence.": {
+  "en": "These are statistical estimates, not certainties: injuries, rotation, weather or stakes are not taken into account. Use with caution."
+ },
+ "Cet état utilise le score à la mi-temps : les championnats extra (USA, ARG, BRA, SWE, JPN, NOR) n'ont pas cette donnée et sont exclus.": {
+  "en": "This view uses the half-time score: the extra leagues (USA, ARG, BRA, SWE, JPN, NOR) do not have this data and are excluded."
+ },
+ "Championnat": {
+  "en": "League"
+ },
+ "Championnats": {
+  "en": "Leagues"
+ },
+ "Championnats : autant de buts dans les deux périodes": {
+  "en": "Leagues: same number of goals in both halves"
+ },
+ "Championnats : plus de buts en 1re qu'en 2e période": {
+  "en": "Leagues: more goals in the 1st half than the 2nd"
+ },
+ "Championnats : plus de buts en 2e qu'en 1re période": {
+  "en": "Leagues: more goals in the 2nd half than the 1st"
+ },
+ "Championnats chargés et ensemble des matchs joués.": {
+  "en": "Loaded leagues and all matches played."
+ },
+ "Championnats européens": {
+  "en": "European leagues"
+ },
+ "Championnats extra": {
+  "en": "Extra leagues"
+ },
+ "Choisis deux équipes différentes.": {
+  "en": "Choose two different teams."
+ },
+ "Classement au pourcentage de défaites ; à égalité, le plus grand nombre de défaites passe devant.": {
+  "en": "Ranked by percentage of losses; in a tie, the higher number of losses comes first."
+ },
+ "Classement au pourcentage de nuls ; à égalité, le plus grand nombre de nuls passe devant.": {
+  "en": "Ranked by percentage of draws; in a tie, the higher number of draws comes first."
+ },
+ "Classement au pourcentage de victoires ; à égalité, le plus grand nombre de victoires passe devant.": {
+  "en": "Ranked by percentage of wins; in a tie, the higher number of wins comes first."
+ },
+ "Classement calculé à partir des résultats chargés : 3 points la victoire, 1 le nul. Départage : points, différence de buts, buts marqués.": {
+  "en": "Table calculated from the loaded results: 3 points for a win, 1 for a draw. Tie-breakers: points, goal difference, goals scored."
+ },
+ "Classement des championnats": {
+  "en": "League tables"
+ },
+ "Clean sheet (n'encaissent pas)": {
+  "en": "Clean sheet (no goals conceded)"
+ },
+ "Code": {
+  "en": "Code"
+ },
+ "Code d'accès (6 chiffres)": {
+  "en": "Access code (6 digits)"
+ },
+ "Combiné": {
+  "en": "Combo"
+ },
+ "Cote 1": {
+  "en": "Odds 1"
+ },
+ "Cote 2": {
+  "en": "Odds 2"
+ },
+ "Cote N": {
+  "en": "Odds X"
+ },
+ "Cote juste": {
+  "en": "Fair odds"
+ },
+ "Cote juste du ticket": {
+  "en": "Fair odds of the ticket"
+ },
+ "Cote marché": {
+  "en": "Market odds"
+ },
+ "Cote « juste » : {c}": {
+  "en": "« Fair » odds: {c}"
+ },
+ "Cotes 1 / N / 2 : cotes moyennes du marché. Cote « juste » selon le modèle = 100 / pourcentage.": {
+  "en": "Odds 1 / X / 2: average market odds. « Fair » odds according to the model = 100 / percentage."
+ },
+ "Date": {
+  "en": "Date"
+ },
+ "Date et heure": {
+  "en": "Date and time"
+ },
+ "Demain": {
+  "en": "Tomorrow"
+ },
+ "Dernier : {x}": {
+  "en": "Last: {x}"
+ },
+ "Dernier match": {
+  "en": "Last match"
+ },
+ "Derniers matchs": {
+  "en": "Last matches"
+ },
+ "Diff": {
+  "en": "GD"
+ },
+ "Différence de buts": {
+  "en": "Goal difference"
+ },
+ "Dim.": {
+  "en": "Sun."
+ },
+ "Domicile": {
+  "en": "Home"
+ },
+ "Défaite {e}": {
+  "en": "{e} loses"
+ },
+ "Défaites": {
+  "en": "Losses"
+ },
+ "Défaites (5 derniers)": {
+  "en": "Losses (last 5)"
+ },
+ "Défaites (saison)": {
+  "en": "Losses (season)"
+ },
+ "Détail technique (visible en mode test seulement) : {e}": {
+  "en": "Technical detail (visible in test mode only): {e}"
+ },
+ "En attente de ta validation…": {
+  "en": "Waiting for your approval…"
+ },
+ "Encaissent au moins 1 but": {
+  "en": "Concede at least 1 goal"
+ },
+ "Encaissent au moins 2 buts": {
+  "en": "Concede at least 2 goals"
+ },
+ "Encaissent au moins 3 buts": {
+  "en": "Concede at least 3 goals"
+ },
+ "Extérieur": {
+  "en": "Away"
+ },
+ "Force d'attaque": {
+  "en": "Attack strength"
+ },
+ "Force de défense": {
+  "en": "Defence strength"
+ },
+ "Forme": {
+  "en": "Form"
+ },
+ "Forme : 5 derniers matchs, du plus ancien au plus récent (W = victoire, D = nul, L = défaite).": {
+  "en": "Form: last 5 matches, from oldest to most recent (W = win, D = draw, L = loss)."
+ },
+ "Forme : du match le plus ancien (à gauche) au plus récent (à droite). W = victoire, D = nul, L = défaite. Vérifie la date du dernier match : une série ancienne pèse moins qu'une série en cours.": {
+  "en": "Form: from the oldest match (left) to the most recent (right). W = win, D = draw, L = loss. Check the date of the last match: an old streak counts less than a current one."
+ },
+ "G": {
+  "en": "W"
+ },
+ "Heure": {
+  "en": "Time"
+ },
+ "Issue": {
+  "en": "Outcome"
+ },
+ "J": {
+  "en": "P"
+ },
+ "Jeu.": {
+  "en": "Thu."
+ },
+ "Journal de chargement": {
+  "en": "Loading log"
+ },
+ "L'abonnement se fait en une minute depuis ton téléphone.": {
+  "en": "Subscribing takes one minute from your phone."
+ },
+ "Le meilleur pronostic de chaque type de ticket (un match n'est utilisé qu'une fois), complété par les pronostics les plus probables restants. Chaque pronostic doit atteindre la probabilité minimale réglée dans son propre ticket.": {
+  "en": "The best pick of each ticket type (each match is used only once), completed with the most likely remaining picks. Each pick must reach the minimum probability set in its own ticket."
+ },
+ "Les abonnements ne sont pas encore activés : toutes les pages sont gratuites pour le moment.": {
+  "en": "Subscriptions are not activated yet: all pages are free for now."
+ },
+ "Les deux équipes marquent (BTTS)": {
+  "en": "Both teams score (BTTS)"
+ },
+ "Les deux équipes marquent (Yes)": {
+  "en": "Both teams score (Yes)"
+ },
+ "Les matchs les plus équilibrés selon le modèle. Un nul dépasse rarement 30 à 35 % de probabilité.": {
+  "en": "The most balanced matches according to the model. A draw rarely exceeds 30 to 35 % probability."
+ },
+ "Les matchs où cet événement est le plus probable selon le modèle, à partir de {s} %.": {
+  "en": "The matches where this event is the most likely according to the model, from {s} %."
+ },
+ "Les probabilités d'un ticket se multiplient : plus il y a de matchs, plus la probabilité que tout passe est faible. Ce sont des estimations statistiques, pas des certitudes.": {
+  "en": "The probabilities of a ticket multiply: the more matches, the lower the chance that everything wins. These are statistical estimates, not certainties."
+ },
+ "Lun.": {
+  "en": "Mon."
+ },
+ "Mar.": {
+  "en": "Tue."
+ },
+ "Marquent au moins 1 but": {
+  "en": "Score at least 1 goal"
+ },
+ "Marquent au moins 2 buts": {
+  "en": "Score at least 2 goals"
+ },
+ "Marquent au moins 3 buts": {
+  "en": "Score at least 3 goals"
+ },
+ "Marquent au moins 4 buts": {
+  "en": "Score at least 4 goals"
+ },
+ "Marquent moins de 2 buts": {
+  "en": "Score fewer than 2 goals"
+ },
+ "Match": {
+  "en": "Match"
+ },
+ "Match nul": {
+  "en": "Draw"
+ },
+ "Matchs": {
+  "en": "Matches"
+ },
+ "Matchs 1re période > 2e": {
+  "en": "Matches 1st half > 2nd"
+ },
+ "Matchs 2e période > 1re": {
+  "en": "Matches 2nd half > 1st"
+ },
+ "Matchs BTTS": {
+  "en": "BTTS matches"
+ },
+ "Matchs avec 0 ou 1 but marqué": {
+  "en": "Matches with 0 or 1 goal scored"
+ },
+ "Matchs avec au moins 1 but encaissé": {
+  "en": "Matches with at least 1 goal conceded"
+ },
+ "Matchs avec au moins 1 but marqué": {
+  "en": "Matches with at least 1 goal scored"
+ },
+ "Matchs avec au moins 2 buts au total.": {
+  "en": "Matches with at least 2 goals in total."
+ },
+ "Matchs avec au moins 2 buts encaissés": {
+  "en": "Matches with at least 2 goals conceded"
+ },
+ "Matchs avec au moins 2 buts marqués": {
+  "en": "Matches with at least 2 goals scored"
+ },
+ "Matchs avec au moins 3 buts au total.": {
+  "en": "Matches with at least 3 goals in total."
+ },
+ "Matchs avec au moins 3 buts encaissés": {
+  "en": "Matches with at least 3 goals conceded"
+ },
+ "Matchs avec au moins 3 buts marqués": {
+  "en": "Matches with at least 3 goals scored"
+ },
+ "Matchs avec au moins 4 buts au total.": {
+  "en": "Matches with at least 4 goals in total."
+ },
+ "Matchs avec au moins 4 buts marqués": {
+  "en": "Matches with at least 4 goals scored"
+ },
+ "Matchs avec le même nombre de buts dans chaque période (0-0 inclus).": {
+  "en": "Matches with the same number of goals in each half (0-0 included)."
+ },
+ "Matchs de l'équipe avec au moins 2 buts au total (marqués + encaissés).": {
+  "en": "The team's matches with at least 2 goals in total (scored + conceded)."
+ },
+ "Matchs de l'équipe avec au moins 3 buts au total.": {
+  "en": "The team's matches with at least 3 goals in total."
+ },
+ "Matchs de l'équipe avec au moins 4 buts au total.": {
+  "en": "The team's matches with at least 4 goals in total."
+ },
+ "Matchs de l'équipe avec le même nombre de buts dans chaque période (0-0 inclus).": {
+  "en": "The team's matches with the same number of goals in each half (0-0 included)."
+ },
+ "Matchs de l'équipe où la 1re période compte plus de buts que la 2e.": {
+  "en": "The team's matches where the 1st half has more goals than the 2nd."
+ },
+ "Matchs de l'équipe où la 2e période compte plus de buts que la 1re.": {
+  "en": "The team's matches where the 2nd half has more goals than the 1st."
+ },
+ "Matchs de l'équipe où les deux équipes ont marqué.": {
+  "en": "The team's matches where both teams scored."
+ },
+ "Matchs joués": {
+  "en": "Matches played"
+ },
+ "Matchs nuls": {
+  "en": "Draws"
+ },
+ "Matchs nuls (5 derniers)": {
+  "en": "Draws (last 5)"
+ },
+ "Matchs nuls (saison)": {
+  "en": "Draws (season)"
+ },
+ "Matchs où l'équipe n'a encaissé aucun but.": {
+  "en": "Matches where the team conceded no goal."
+ },
+ "Matchs où l'équipe n'a marqué aucun but.": {
+  "en": "Matches where the team scored no goal."
+ },
+ "Matchs où la 1re période compte plus de buts que la 2e.": {
+  "en": "Matches where the 1st half has more goals than the 2nd."
+ },
+ "Matchs où la 2e période compte plus de buts que la 1re (les deux équipes confondues).": {
+  "en": "Matches where the 2nd half has more goals than the 1st (both teams combined)."
+ },
+ "Matchs où les deux équipes ont marqué.": {
+  "en": "Matches where both teams scored."
+ },
+ "Matchs pris en compte": {
+  "en": "Matches included"
+ },
+ "Matchs périodes égales": {
+  "en": "Matches with equal halves"
+ },
+ "Matchs sans encaisser": {
+  "en": "Matches without conceding"
+ },
+ "Matchs sans marquer": {
+  "en": "Matches without scoring"
+ },
+ "Matchs à 2 buts ou +": {
+  "en": "Matches with 2+ goals"
+ },
+ "Matchs à 3 buts ou +": {
+  "en": "Matches with 3+ goals"
+ },
+ "Matchs à 4 buts ou +": {
+  "en": "Matches with 4+ goals"
+ },
+ "Mer.": {
+  "en": "Wed."
+ },
+ "Mi-temps dom.": {
+  "en": "Half-time home"
+ },
+ "Mi-temps ext.": {
+  "en": "Half-time away"
+ },
+ "Minimum de matchs joués": {
+  "en": "Minimum matches played"
+ },
+ "Mode test (sandbox) : aucun argent réel n'est prélevé.": {
+  "en": "Test mode (sandbox): no real money is charged."
+ },
+ "Modèle de **Poisson** : pour chaque équipe, forces d'attaque et de défense à domicile et à l'extérieur par rapport à la moyenne de son championnat (lissées en début de saison), d'où les buts attendus puis les probabilités de chaque score.": {
+  "en": "**Poisson** model: for each team, home and away attack and defence strengths relative to its league average (smoothed early in the season), giving the expected goals and then the probability of each score."
+ },
+ "Moyenne buts encaissés": {
+  "en": "Average goals conceded"
+ },
+ "Moyenne buts encaissés · champ.": {
+  "en": "Average goals conceded · leagues"
+ },
+ "Moyenne buts encaissés · équipes": {
+  "en": "Average goals conceded · teams"
+ },
+ "Moyenne buts marqués": {
+  "en": "Average goals scored"
+ },
+ "Moyenne buts marqués · champ.": {
+  "en": "Average goals scored · leagues"
+ },
+ "Moyenne buts marqués · équipes": {
+  "en": "Average goals scored · teams"
+ },
+ "Moyenne de buts encaissés par championnat": {
+  "en": "Average goals conceded by league"
+ },
+ "Moyenne de buts encaissés par équipe": {
+  "en": "Average goals conceded by team"
+ },
+ "Moyenne de buts marqués par championnat": {
+  "en": "Average goals scored by league"
+ },
+ "Moyenne de buts marqués par équipe": {
+  "en": "Average goals scored by team"
+ },
+ "Moyenne des buts encaissés par match": {
+  "en": "Average goals conceded per match"
+ },
+ "Moyenne des buts marqués par match": {
+  "en": "Average goals scored per match"
+ },
+ "Moyenne tous championnats": {
+  "en": "Average of all leagues"
+ },
+ "Moyenne à domicile": {
+  "en": "Home average"
+ },
+ "Moyenne à l'extérieur": {
+  "en": "Away average"
+ },
+ "Médiane buts encaissés": {
+  "en": "Median goals conceded"
+ },
+ "Médiane buts encaissés · champ.": {
+  "en": "Median goals conceded · leagues"
+ },
+ "Médiane buts encaissés · équipes": {
+  "en": "Median goals conceded · teams"
+ },
+ "Médiane buts marqués": {
+  "en": "Median goals scored"
+ },
+ "Médiane buts marqués · champ.": {
+  "en": "Median goals scored · leagues"
+ },
+ "Médiane buts marqués · équipes": {
+  "en": "Median goals scored · teams"
+ },
+ "Médiane de buts encaissés par championnat": {
+  "en": "Median goals conceded by league"
+ },
+ "Médiane de buts encaissés par équipe": {
+  "en": "Median goals conceded by team"
+ },
+ "Médiane de buts marqués par championnat": {
+  "en": "Median goals scored by league"
+ },
+ "Médiane de buts marqués par équipe": {
+  "en": "Median goals scored by team"
+ },
+ "Médiane des buts encaissés par match": {
+  "en": "Median goals conceded per match"
+ },
+ "Médiane des buts marqués par match": {
+  "en": "Median goals scored per match"
+ },
+ "Médiane à domicile": {
+  "en": "Home median"
+ },
+ "Médiane à l'extérieur": {
+  "en": "Away median"
+ },
+ "N": {
+  "en": "D"
+ },
+ "Ne marquent pas": {
+  "en": "Fail to score"
+ },
+ "Nom": {
+  "en": "Name"
+ },
+ "Nombre d'équipes": {
+  "en": "Number of teams"
+ },
+ "Nombre de matchs": {
+  "en": "Number of matches"
+ },
+ "Note-le bien : avec ton numéro, il te permet de te reconnecter sur n'importe quel appareil.": {
+  "en": "Write it down: with your number, it lets you log in again on any device."
+ },
+ "Nul": {
+  "en": "Draw"
+ },
+ "Nuls": {
+  "en": "Draws"
+ },
+ "Numéro Mobile Money": {
+  "en": "Mobile Money number"
+ },
+ "Numéro non reconnu pour ce pays. Vérifie le pays choisi et le numéro.": {
+  "en": "Number not recognised for this country. Check the selected country and the number."
+ },
+ "Numéro ou code incorrect, ou abonnement expiré.": {
+  "en": "Wrong number or code, or subscription expired."
+ },
+ "Numéro trop court. Saisis ton numéro Mobile Money complet.": {
+  "en": "Number too short. Enter your full Mobile Money number."
+ },
+ "N°": {
+  "en": "No."
+ },
+ "Opérateur": {
+  "en": "Operator"
+ },
+ "Ordre": {
+  "en": "Order"
+ },
+ "Over 1.5 buts": {
+  "en": "Over 1.5 goals"
+ },
+ "Over 1.5 · championnats": {
+  "en": "Over 1.5 · leagues"
+ },
+ "Over 1.5 · équipes": {
+  "en": "Over 1.5 · teams"
+ },
+ "Over 2.5 buts": {
+  "en": "Over 2.5 goals"
+ },
+ "Over 2.5 · championnats": {
+  "en": "Over 2.5 · leagues"
+ },
+ "Over 2.5 · équipes": {
+  "en": "Over 2.5 · teams"
+ },
+ "Over 3.5 · championnats": {
+  "en": "Over 3.5 · leagues"
+ },
+ "Over 3.5 · équipes": {
+  "en": "Over 3.5 · teams"
+ },
+ "P": {
+  "en": "L"
+ },
+ "Paiement refusé : {r}": {
+  "en": "Payment refused: {r}"
+ },
+ "Pas assez de matchs.": {
+  "en": "Not enough matches."
+ },
+ "Pas de données pour cet état.": {
+  "en": "No data for this view."
+ },
+ "Pas de match disponible pour ce ticket.": {
+  "en": "No match available for this ticket."
+ },
+ "Pas de match joué pour ce championnat.": {
+  "en": "No match played in this league."
+ },
+ "Pays": {
+  "en": "Country"
+ },
+ "Plus bas d'abord": {
+  "en": "Lowest first"
+ },
+ "Plus de 1.5 buts": {
+  "en": "Over 1.5 goals"
+ },
+ "Plus de 2.5 buts": {
+  "en": "Over 2.5 goals"
+ },
+ "Plus de buts en 1re période": {
+  "en": "More goals in the 1st half"
+ },
+ "Plus de buts en 2e période": {
+  "en": "More goals in the 2nd half"
+ },
+ "Plus élevé d'abord": {
+  "en": "Highest first"
+ },
+ "Points": {
+  "en": "Points"
+ },
+ "Pourcentages arrondis à l'entier · Rang : 1, 2, 3… (à égalité, départage par nombre de matchs puis ordre alphabétique) · Données mises à jour automatiquement toutes les 3 heures.": {
+  "en": "Percentages rounded to the nearest whole number · Rank: 1, 2, 3… (ties broken by number of matches, then alphabetical order) · Data updated automatically every 3 hours."
+ },
+ "Prix : **{prix}** pour {j} jours · opérateurs : {ops}": {
+  "en": "Price: **{prix}** for {j} days · operators: {ops}"
+ },
+ "Probabilité": {
+  "en": "Probability"
+ },
+ "Probabilité (%)": {
+  "en": "Probability (%)"
+ },
+ "Probabilité minimale de réussite (%)": {
+  "en": "Minimum probability of success (%)"
+ },
+ "Probabilité que tout passe": {
+  "en": "Probability that everything wins"
+ },
+ "Pronostic": {
+  "en": "Pick"
+ },
+ "Prédictions": {
+  "en": "Predictions"
+ },
+ "Pts": {
+  "en": "Pts"
+ },
+ "Période ou date": {
+  "en": "Period or date"
+ },
+ "Périodes égales · champ.": {
+  "en": "Equal halves · leagues"
+ },
+ "Périodes égales · équipes": {
+  "en": "Equal halves · teams"
+ },
+ "Rang": {
+  "en": "Rank"
+ },
+ "Rechercher une équipe": {
+  "en": "Search for a team"
+ },
+ "Réessayer": {
+  "en": "Try again"
+ },
+ "S'abonner : environ 1 € pour {j} jours": {
+  "en": "Subscribe: about €1 for {j} days"
+ },
+ "S'abonner maintenant": {
+  "en": "Subscribe now"
+ },
+ "Saison": {
+  "en": "Season"
+ },
+ "Saison européenne": {
+  "en": "European season"
+ },
+ "Saison {s} · {e} équipes · {m} matchs · ": {
+  "en": "Season {s} · {e} teams · {m} matches · "
+ },
+ "Sam.": {
+  "en": "Sat."
+ },
+ "Score": {
+  "en": "Score"
+ },
+ "Score exact {e}": {
+  "en": "Exact score {e}"
+ },
+ "Score probable": {
+  "en": "Likely score"
+ },
+ "Scores exacts": {
+  "en": "Exact scores"
+ },
+ "Se connecter": {
+  "en": "Log in"
+ },
+ "Service d'abonnement momentanément indisponible. Réessaie dans un instant.": {
+  "en": "Subscription service temporarily unavailable. Try again in a moment."
+ },
+ "Service de paiement momentanément indisponible. Réessaie dans un instant.": {
+  "en": "Payment service temporarily unavailable. Try again in a moment."
+ },
+ "Seulement **{n} match(s)** sur les {total} à venir atteignent la probabilité minimale : le ticket est volontairement plus court que demandé. Pour en avoir plus, baisse le seuil (au risque d'un ticket moins sûr), élargis la période ou ajoute des championnats.": {
+  "en": "Only **{n} match(es)** out of the {total} upcoming reach the minimum probability: the ticket is deliberately shorter than requested. To get more, lower the threshold (at the risk of a less safe ticket), widen the period or add leagues."
+ },
+ "Seuls les buts encaissés par l'équipe comptent.": {
+  "en": "Only goals conceded by the team count."
+ },
+ "Seuls les buts marqués par l'équipe comptent.": {
+  "en": "Only goals scored by the team count."
+ },
+ "Seuls les matchs dont la probabilité atteint ce niveau entrent dans le ticket. Le seuil par défaut est adapté à l'événement (un nul ou un score exact n'atteint jamais le niveau d'une victoire nette).": {
+  "en": "Only matches whose probability reaches this level go into the ticket. The default threshold is adapted to the event (a draw or an exact score never reaches the level of a clear win)."
+ },
+ "Statut": {
+  "en": "Status"
+ },
+ "Ton code d'accès : **{c}**. Garde-le : il te sert à te reconnecter.": {
+  "en": "Your access code: **{c}**. Keep it: you need it to log in again."
+ },
+ "Top équipes : défaites sur les 5 derniers matchs": {
+  "en": "Top teams: losses in the last 5 matches"
+ },
+ "Top équipes : matchs nuls sur les 5 derniers matchs": {
+  "en": "Top teams: draws in the last 5 matches"
+ },
+ "Top équipes : victoires sur les 5 derniers matchs": {
+  "en": "Top teams: wins in the last 5 matches"
+ },
+ "Toujours en attente de validation. Si tu as déjà validé, clique sur « Vérifier » ; sinon, valide la demande sur ton téléphone.": {
+  "en": "Still waiting for approval. If you have already approved, click « Check »; otherwise, approve the request on your phone."
+ },
+ "Tous": {
+  "en": "All"
+ },
+ "Tous les championnats": {
+  "en": "All leagues"
+ },
+ "Tous les matchs": {
+  "en": "All matches"
+ },
+ "Tous les matchs à venir": {
+  "en": "All upcoming matches"
+ },
+ "Toutes": {
+  "en": "All"
+ },
+ "Toutes les dates à venir ({n} matchs)": {
+  "en": "All upcoming dates ({n} matches)"
+ },
+ "Trier par": {
+  "en": "Sort by"
+ },
+ "Trop de tentatives. Recharge la page dans quelques minutes.": {
+  "en": "Too many attempts. Reload the page in a few minutes."
+ },
+ "Tu peux prolonger dès maintenant : {j} jours de plus seront ajoutés à la fin de ton abonnement actuel.": {
+  "en": "You can extend now: {j} more days will be added to the end of your current subscription."
+ },
+ "Type": {
+  "en": "Type"
+ },
+ "Un score exact reste un pari très incertain : même le plus probable dépasse rarement 15 à 20 %.": {
+  "en": "An exact score remains a very uncertain bet: even the most likely one rarely exceeds 15 to 20 %."
+ },
+ "Ven.": {
+  "en": "Fri."
+ },
+ "Victoire domicile": {
+  "en": "Home win"
+ },
+ "Victoire extérieur": {
+  "en": "Away win"
+ },
+ "Victoire {e}": {
+  "en": "{e} wins"
+ },
+ "Victoire {e} et les deux équipes marquent": {
+  "en": "{e} wins and both teams score"
+ },
+ "Victoires": {
+  "en": "Wins"
+ },
+ "Victoires (5 derniers)": {
+  "en": "Wins (last 5)"
+ },
+ "Victoires (saison)": {
+  "en": "Wins (season)"
+ },
+ "ce numéro n'a pas de compte Mobile Money actif": {
+  "en": "this number has no active Mobile Money account"
+ },
+ "environ 1 €": {
+  "en": "about €1"
+ },
+ "la demande n'est pas parvenue à l'opérateur": {
+  "en": "the request did not reach the operator"
+ },
+ "le paiement a échoué": {
+  "en": "the payment failed"
+ },
+ "le paiement n'a pas été validé sur le téléphone (code PIN non saisi ou refusé)": {
+  "en": "the payment was not approved on the phone (PIN code not entered or refused)"
+ },
+ "le plafond de transactions du compte est atteint": {
+  "en": "the account's transaction limit has been reached"
+ },
+ "le plafond du portefeuille est atteint": {
+  "en": "the wallet limit has been reached"
+ },
+ "le solde Mobile Money est insuffisant": {
+  "en": "the Mobile Money balance is insufficient"
+ },
+ "{date} à {heure}": {
+  "en": "{date} at {heure}"
+ },
+ "{e} marque": {
+  "en": "{e} scores"
+ },
+ "{n} matchs": {
+  "en": "{n} matches"
+ },
+ "{n} matchs · du {d1} au {d2}": {
+  "en": "{n} matches · from {d1} to {d2}"
+ },
+ "{n} matchs à venir analysés · équipes ayant joué au moins {m} matchs.": {
+  "en": "{n} upcoming matches analysed · teams that have played at least {m} matches."
+ },
+ "{n} équipes affichées sur {total} classées": {
+  "en": "{n} teams shown out of {total} ranked"
+ },
+ "{n} équipes affichées sur {total} classées · minimum {m} matchs joués": {
+  "en": "{n} teams shown out of {total} ranked · minimum {m} matches played"
+ },
+ "« 12 Yes » : l'équipe la plus forte du match gagne ET les deux équipes marquent (ex. 2-1, 3-1, 1-2). Plus exigeant qu'une simple victoire, donc probabilités plus basses.": {
+  "en": "« 12 Yes »: the stronger team wins AND both teams score (e.g. 2-1, 3-1, 1-2). Harder than a simple win, so lower probabilities."
+ },
+ "« Défaite X » : l'équipe X perd le match (son adversaire gagne).": {
+  "en": "« X loses »: team X loses the match (its opponent wins)."
+ },
+ "Équipe": {
+  "en": "Team"
+ },
+ "Équipes": {
+  "en": "Teams"
+ },
+ "Équipes : autant de buts dans les deux périodes": {
+  "en": "Teams: same number of goals in both halves"
+ },
+ "Équipes : plus de buts en 1re qu'en 2e période": {
+  "en": "Teams: more goals in the 1st half than the 2nd"
+ },
+ "Équipes : plus de buts en 2e qu'en 1re période": {
+  "en": "Teams: more goals in the 2nd half than the 1st"
+ },
+ "Équipes avec le plus de défaites": {
+  "en": "Teams with the most losses"
+ },
+ "Équipes avec le plus de matchs nuls": {
+  "en": "Teams with the most draws"
+ },
+ "Équipes avec le plus de victoires": {
+  "en": "Teams with the most wins"
+ },
+ "Équipes qui encaissent au moins 1 but": {
+  "en": "Teams conceding at least 1 goal"
+ },
+ "Équipes qui encaissent au moins 2 buts": {
+  "en": "Teams conceding at least 2 goals"
+ },
+ "Équipes qui encaissent au moins 3 buts": {
+  "en": "Teams conceding at least 3 goals"
+ },
+ "Équipes qui marquent au moins 1 but": {
+  "en": "Teams scoring at least 1 goal"
+ },
+ "Équipes qui marquent au moins 2 buts": {
+  "en": "Teams scoring at least 2 goals"
+ },
+ "Équipes qui marquent au moins 3 buts": {
+  "en": "Teams scoring at least 3 goals"
+ },
+ "Équipes qui marquent au moins 4 buts": {
+  "en": "Teams scoring at least 4 goals"
+ },
+ "Équipes qui marquent moins de 1 but (0 but)": {
+  "en": "Teams scoring fewer than 1 goal (0 goals)"
+ },
+ "Équipes qui marquent moins de 2 buts (0 ou 1 but)": {
+  "en": "Teams scoring fewer than 2 goals (0 or 1 goal)"
+ },
+ "Équipes qui n'encaissent pas (clean sheet)": {
+  "en": "Teams that don't concede (clean sheet)"
+ },
+ "⏱️ Mi-temps": {
+  "en": "⏱️ Halves"
+ },
+ "⚙️ Paramètres": {
+  "en": "⚙️ Settings"
+ },
+ "⚽ Marqués": {
+  "en": "⚽ Scored"
+ },
+ "⚽ Mise à jour des matchs et calcul des statistiques… quelques instants": {
+  "en": "⚽ Updating matches and computing statistics… a few moments"
+ },
+ "✅ Abonné jusqu'au {d}": {
+  "en": "✅ Subscribed until {d}"
+ },
+ "✅ Chargé": {
+  "en": "✅ Loaded"
+ },
+ "✅ Paiement reçu ! Abonnement actif jusqu'au **{d}**.": {
+  "en": "✅ Payment received! Subscription active until **{d}**."
+ },
+ "✅ Ton abonnement est actif jusqu'au **{d}**.": {
+  "en": "✅ Your subscription is active until **{d}**."
+ },
+ "❌ Indisponible": {
+  "en": "❌ Unavailable"
+ },
+ "❌ Paiement non abouti : {m}. Aucun montant n'a été débité. Tu peux réessayer.": {
+  "en": "❌ Payment not completed: {m}. No amount has been debited. You can try again."
+ },
+ "⬇️ Télécharger en CSV": {
+  "en": "⬇️ Download as CSV"
+ },
+ "🎟️ Ticket : {t}": {
+  "en": "🎟️ Ticket: {t}"
+ },
+ "🎟️ Tickets": {
+  "en": "🎟️ Tickets"
+ },
+ "🎟️ Voir les tickets": {
+  "en": "🎟️ See the tickets"
+ },
+ "🎯 Buts du match": {
+  "en": "🎯 Match goals"
+ },
+ "🎯 Match au choix": {
+  "en": "🎯 Custom match"
+ },
+ "🏆 Classement des championnats": {
+  "en": "🏆 League tables"
+ },
+ "🏠 Accueil": {
+  "en": "🏠 Home"
+ },
+ "👤 Administrateur": {
+  "en": "👤 Administrator"
+ },
+ "💳 Abonnement": {
+  "en": "💳 Subscription"
+ },
+ "💳 S'abonner maintenant": {
+  "en": "💳 Subscribe now"
+ },
+ "📅 Prochains matchs": {
+  "en": "📅 Upcoming matches"
+ },
+ "📅 Récupération des prochains matchs…": {
+  "en": "📅 Fetching upcoming matches…"
+ },
+ "📈 Forme": {
+  "en": "📈 Form"
+ },
+ "📊 Stats": {
+  "en": "📊 Stats"
+ },
+ "📱 Une demande de paiement {op} de **{prix}** a été envoyée au **+{num}**. Valide-la sur ton téléphone avec ton code PIN.": {
+  "en": "📱 A {op} payment request for **{prix}** has been sent to **+{num}**. Approve it on your phone with your PIN code."
+ },
+ "🔄 Actualiser les données": {
+  "en": "🔄 Refresh data"
+ },
+ "🔄 Vérifier": {
+  "en": "🔄 Check"
+ },
+ "🔒 **Contenu réservé aux abonnés** : pronostics des prochains matchs et tickets, pour **environ 1 € les {j} jours**, payables par Mobile Money dans de nombreux pays d'Afrique (MTN, Airtel, Orange, Moov, M-Pesa, Wave…).": {
+  "en": "🔒 **Subscribers only**: predictions for upcoming matches and tickets, for **about €1 per {j} days**, payable by Mobile Money in many African countries (MTN, Airtel, Orange, Moov, M-Pesa, Wave…)."
+ },
+ "🔒 Non abonné": {
+  "en": "🔒 Not subscribed"
+ },
+ "🔮 Prédictions": {
+  "en": "🔮 Predictions"
+ },
+ "🛡️ Encaissés": {
+  "en": "🛡️ Conceded"
+ }
+}

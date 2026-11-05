@@ -3,7 +3,8 @@ abonnement.py - Abonnements payants par Mobile Money via pawaPay, abonnés enreg
 
 Fonctionnement
 --------------
-1. L'utilisateur saisit son numéro Mobile Money ; pawaPay devine l'opérateur (predict-provider).
+1. L'utilisateur choisit son pays et saisit son numéro Mobile Money. La liste des pays et
+   opérateurs vient de pawaPay (GET /v2/active-conf) ; pawaPay devine l'opérateur (predict-provider).
 2. L'application crée un dépôt (POST /v2/deposits) : le client reçoit une demande de paiement
    sur son téléphone et la valide avec son code PIN.
 3. Streamlit ne peut pas recevoir les « callbacks » de pawaPay : l'application interroge donc
@@ -22,8 +23,11 @@ Configuration (Streamlit Cloud > ⋮ > Settings > Secrets), à côté de la sect
     cle = "eyJ..."              # clé « service_role » (Project Settings > API) - ne jamais la publier
 
     [abonnement]
-    prix_xaf = 656              # 1 € = 655,957 XAF
     duree_jours = 30
+    # facultatif : changer le prix d'une monnaie (sinon environ 1 € par monnaie, voir PRIX_DEFAUT)
+    # [abonnement.prix]
+    # XAF = 656
+    # NGN = 1800
     code_admin = "un-code-secret-a-toi"   # facultatif : accès permanent pour toi
 
 Sans section [pawapay] ET [supabase], l'abonnement est désactivé et tout reste gratuit.
@@ -37,9 +41,14 @@ import requests
 import streamlit as st
 
 API = {"sandbox": "https://api.sandbox.pawapay.io", "production": "https://api.pawapay.io"}
-PRIX_DEFAUT = 656
 DUREE_DEFAUT = 30
-OPERATEURS = {"MTN_MOMO_COG": "MTN Mobile Money", "AIRTEL_COG": "Airtel Money"}
+# Prix d'un mois, environ 1 €, par monnaie (arrondi). Modifiable dans les Secrets : [abonnement.prix]
+PRIX_DEFAUT = {
+    "XAF": 656, "XOF": 656, "CDF": 3000, "USD": 1.2, "ETB": 170, "GHS": 13, "KES": 150,
+    "LSL": 20, "MWK": 2000, "MZN": 75, "NGN": 1800, "RWF": 1700, "SLE": 27, "TZS": 3000,
+    "UGX": 4300, "ZMW": 30, "ZAR": 20, "GNF": 10000, "LRD": 230, "GMD": 80,
+}
+PAYS_DEFAUT = "COG"
 TABLE = "abonnements"
 
 
@@ -62,10 +71,21 @@ def config():
         "sandbox": str(p.get("environnement", "sandbox")).lower() != "production",
         "sb_url": str(s.get("url", "")).strip().rstrip("/").removesuffix("/rest/v1"),
         "sb_cle": str(s.get("cle", "")).strip(),
-        "prix": int(a.get("prix_xaf", PRIX_DEFAUT)),
+        "prix": _prix_config(a),
         "duree": int(a.get("duree_jours", DUREE_DEFAUT)),
         "code_admin": str(a.get("code_admin", "")).strip(),
     }
+
+
+def _prix_config(a):
+    prix = dict(PRIX_DEFAUT)
+    try:
+        prix.update({str(k).upper(): float(v) for k, v in dict(a.get("prix", {})).items()})
+    except Exception:
+        pass
+    if "prix_xaf" in a:                     # ancienne configuration
+        prix["XAF"] = float(a["prix_xaf"])
+    return prix
 
 
 def maintenant():
@@ -84,19 +104,93 @@ def _pp(cfg, methode, chemin, json=None):
         return r.status_code, {}
 
 
-def predire_operateur(cfg, numero):
-    """Nettoie le numéro et devine l'opérateur. Renvoie (msisdn, provider) ou lève ValueError."""
-    code, rep = _pp(cfg, "POST", "/v2/predict-provider", {"phoneNumber": numero})
-    if code != 200 or "provider" not in rep:
-        raise ValueError("Numéro invalide ou opérateur non reconnu. Vérifie le numéro (ex. 242 06 123 45 67).")
-    if rep["provider"] not in OPERATEURS:
-        raise ValueError("Pour l'instant, seuls MTN Mobile Money et Airtel Money (Congo-Brazzaville) sont acceptés.")
-    return rep["phoneNumber"], rep["provider"]
+def _nombre(x):
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return None
 
 
-def demander_paiement(cfg, msisdn, provider, deposit_id):
+@st.cache_data(ttl=3600, show_spinner=False)
+def _active_conf(api, token):
+    r = requests.request("GET", api + "/v2/active-conf", params={"operationType": "DEPOSIT"}, timeout=30,
+                     headers={"Authorization": f"Bearer {token}"})
+    if r.status_code != 200:
+        raise RuntimeError(f"pawaPay active-conf {r.status_code} : {r.text[:200]}")
+    return r.json()
+
+
+def pays_disponibles(cfg):
+    """
+    Pays et opérateurs ouverts aux dépôts pour ce compte pawaPay.
+    Renvoie {code_pays: {"nom", "prefixe", "operateurs": [{"provider", "nom", "devise", "min", "max", "decimales"}]}}
+    """
+    conf = _active_conf(cfg["api"], cfg["token"])
+    pays = {}
+    for c in conf.get("countries", []):
+        nom = c.get("displayName")
+        nom = (nom.get("fr") or nom.get("en")) if isinstance(nom, dict) else (nom or c.get("country"))
+        ops, vus = [], set()
+        for p in c.get("providers", []):
+            for cur in p.get("currencies", []):
+                types = cur.get("operationTypes") or {}
+                if isinstance(types, list):        # certains exemples de la doc donnent une liste
+                    types = {t.get("operationType"): t for t in types if isinstance(t, dict)}
+                dep = types.get("DEPOSIT")
+                if not dep or dep.get("status", "OPERATIONAL") == "CLOSED":
+                    continue
+                if p["provider"] in vus:           # RDC : même opérateur en CDF et USD -> 1re monnaie
+                    continue
+                vus.add(p["provider"])
+                ops.append({
+                    "provider": p["provider"],
+                    "nom": p.get("displayName") or p.get("nameDisplayedToCustomer") or p["provider"],
+                    "devise": cur.get("currency"),
+                    "min": _nombre(dep.get("minAmount", dep.get("minTransactionLimit"))),
+                    "max": _nombre(dep.get("maxAmount", dep.get("maxTransactionLimit"))),
+                    "decimales": dep.get("decimalsInAmount", "NONE") == "TWO_PLACES",
+                })
+        if ops:
+            pays[c["country"]] = {"nom": nom, "prefixe": str(c.get("prefix", "")), "operateurs": ops}
+    return dict(sorted(pays.items(), key=lambda kv: kv[1]["nom"]))
+
+
+def montant(cfg, op):
+    """Montant à payer (texte, format pawaPay) pour un opérateur."""
+    m = float(cfg["prix"].get(op["devise"], 0)) or (op["min"] or 1)
+    if op["min"] is not None:
+        m = max(m, op["min"])
+    if op["max"] is not None:
+        m = min(m, op["max"])
+    return f"{m:.2f}" if op["decimales"] else str(int(round(m)))
+
+
+def format_montant(texte, devise):
+    v = float(texte)
+    return (f"{v:,.2f}" if v != int(v) else f"{int(v):,}").replace(",", " ") + f" {devise}"
+
+
+def normaliser_numero(cfg, code_pays, prefixe, numero):
+    """Renvoie (msisdn, provider deviné) pour un numéro du pays choisi, ou lève ValueError."""
+    chiffres = "".join(ch for ch in str(numero) if ch.isdigit())
+    if len(chiffres) < 6:
+        raise ValueError("Numéro trop court. Saisis ton numéro Mobile Money complet.")
+    if prefixe and chiffres.startswith(prefixe) and len(chiffres) > len(prefixe) + 6:
+        essais = [chiffres]
+    else:                                   # numéro local : on ajoute l'indicatif (avec puis sans le 0 initial)
+        essais = [prefixe + chiffres]
+        if chiffres.startswith("0"):
+            essais.append(prefixe + chiffres.lstrip("0"))
+    for n in essais:
+        code, rep = _pp(cfg, "POST", "/v2/predict-provider", {"phoneNumber": n})
+        if code == 200 and rep.get("provider") and rep.get("country") == code_pays:
+            return rep["phoneNumber"], rep["provider"]
+    raise ValueError("Numéro non reconnu pour ce pays. Vérifie le pays choisi et le numéro.")
+
+
+def demander_paiement(cfg, msisdn, provider, deposit_id, somme, devise):
     """Envoie la demande de paiement. Renvoie (statut, message)."""
-    corps = {"depositId": deposit_id, "amount": str(cfg["prix"]), "currency": "XAF",
+    corps = {"depositId": deposit_id, "amount": somme, "currency": devise,
              "payer": {"type": "MMO", "accountDetails": {"phoneNumber": msisdn, "provider": provider}}}
     code, rep = _pp(cfg, "POST", "/v2/deposits", corps)
     statut = rep.get("status")
@@ -134,9 +228,9 @@ def _sb(cfg, methode, params=None, json=None):
     return r.json() if r.content else []
 
 
-def enregistrer_demande(cfg, deposit_id, msisdn, provider):
+def enregistrer_demande(cfg, deposit_id, msisdn, provider, somme, devise, pays):
     _sb(cfg, "POST", json={"deposit_id": deposit_id, "telephone": msisdn, "operateur": provider,
-                           "montant": cfg["prix"], "devise": "XAF", "statut": "EN_ATTENTE",
+                           "montant": float(somme), "devise": devise, "pays": pays, "statut": "EN_ATTENTE",
                            "cree_le": maintenant().isoformat()})
 
 
@@ -183,30 +277,35 @@ def finaliser(cfg, deposit_id, msisdn):
     return "EN_ATTENTE", None
 
 
-def rattraper(cfg, msisdn):
+def _filtre_numero(numero):
+    """Filtre Supabase sur les 8 derniers chiffres : marche avec ou sans indicatif / 0 initial."""
+    chiffres = "".join(ch for ch in str(numero) if ch.isdigit()).lstrip("0")
+    return f"like.*{chiffres[-8:]}" if len(chiffres) >= 8 else None
+
+
+def rattraper(cfg, filtre):
     """Vérifie les paiements restés « en attente » (page fermée trop tôt...)."""
-    for ligne in _sb(cfg, "GET", params={"telephone": f"eq.{msisdn}", "statut": "eq.EN_ATTENTE",
-                                         "select": "deposit_id"}):
+    for ligne in _sb(cfg, "GET", params={"telephone": filtre, "statut": "eq.EN_ATTENTE",
+                                         "select": "deposit_id,telephone"}):
         try:
-            finaliser(cfg, ligne["deposit_id"], msisdn)
+            finaliser(cfg, ligne["deposit_id"], ligne["telephone"])
         except Exception:
             pass
 
 
 def connexion(cfg, numero, code):
-    """Renvoie la date de fin si numéro + code donnent un abonnement actif, sinon None."""
-    try:
-        msisdn, _ = predire_operateur(cfg, numero)
-    except ValueError:
+    """Renvoie (msisdn, date de fin) si numéro + code donnent un abonnement actif, sinon None."""
+    filtre, code = _filtre_numero(numero), str(code).strip()
+    if not filtre or not (code.isdigit() and len(code) == 6):
         return None
-    rattraper(cfg, msisdn)
-    lignes = _sb(cfg, "GET", params={"telephone": f"eq.{msisdn}", "statut": "eq.PAYE",
-                                     "code_acces": f"eq.{code.strip()}", "select": "expire_le",
+    rattraper(cfg, filtre)
+    lignes = _sb(cfg, "GET", params={"telephone": filtre, "statut": "eq.PAYE",
+                                     "code_acces": f"eq.{code}", "select": "telephone,expire_le",
                                      "order": "expire_le.desc", "limit": "1"})
     if not lignes:
         return None
     fin = datetime.fromisoformat(lignes[0]["expire_le"].replace("Z", "+00:00"))
-    return (msisdn, fin) if fin > maintenant() else None
+    return (lignes[0]["telephone"], fin) if fin > maintenant() else None
 
 
 def nouveau_deposit_id():

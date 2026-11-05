@@ -91,33 +91,45 @@ Ne mets jamais ce mot de passe dans un fichier envoyé sur GitHub : seuls les «
 
 ## Abonnement payant (pawaPay + Supabase)
 
-Les pages **Prédictions** et **Tickets** sont réservées aux abonnés, au prix de **656 XAF (≈ 1 €) pour 30 jours**. Les statistiques restent gratuites. Le paiement se fait par Mobile Money (MTN MoMo et Airtel Money Congo). Après le paiement, l'abonné reçoit un **code à 6 chiffres** qui lui permet de se reconnecter avec son numéro.
+Les pages **Prédictions** et **Tickets** sont réservées aux abonnés, pour **environ 1 € les 30 jours** dans la monnaie locale. Les statistiques restent gratuites. Le paiement se fait par Mobile Money dans **tous les pays et opérateurs ouverts sur ton compte pawaPay** : la liste vient directement de pawaPay (Congo, RDC, Cameroun, Côte d'Ivoire, Sénégal, Bénin, Burkina Faso, Gabon, Ghana, Kenya, Nigeria, Rwanda, Ouganda, Tanzanie, Zambie…). Après le paiement, l'abonné reçoit un **code à 6 chiffres** ; il se reconnecte avec son numéro (avec ou sans indicatif) et ce code.
 
 **Tant que les secrets ci-dessous ne sont pas renseignés, toute l'application reste gratuite.**
 
-1. **Supabase** (stockage des abonnés) : crée un projet gratuit sur https://supabase.com. Ouvre « SQL Editor », colle le contenu de `supabase_abonnements.sql`, puis « Run ». Dans « Project Settings » → « API », copie l'« URL » et la clé **service_role** (pas la clé anon).
-2. **pawaPay** : crée un compte marchand sur https://www.pawapay.io. Dans le tableau de bord **sandbox**, génère un « API token ».
-3. **Secrets Streamlit** (share.streamlit.io → ton application → « ⋮ » → « Settings » → « Secrets ») : ajoute ces lignes sous la section `[email]` existante, puis « Save » :
+1. **Supabase** : crée un projet gratuit sur https://supabase.com, ouvre « SQL Editor », colle le contenu de `supabase_abonnements.sql`, puis « Run ». Le script peut être relancé sans danger : il met aussi à jour une ancienne table. Dans « Project Settings », copie l'URL du projet et la clé secrète (`service_role` en `eyJ…`, ou `sb_secret_…`).
+2. **pawaPay** : crée un compte sur https://dashboard.sandbox.pawapay.io, renseigne une callback URL (l'adresse de l'application suffit), puis génère un token dans « Developers » → « Create API Token ».
+3. **Secrets Streamlit** (share.streamlit.io → ton application → « ⋮ » → « Settings » → « Secrets ») :
 
 ```toml
 [pawapay]
-token        = "colle-ici-le-token-pawapay"
-environnement = "sandbox"          # mettre "production" une fois le compte validé
+token = "colle-ici-le-token-pawapay"
+environnement = "sandbox"          # "production" une fois le compte validé
 
 [supabase]
 url = "https://xxxxxxxx.supabase.co"
-cle = "colle-ici-la-cle-service_role"
+cle = "colle-ici-la-cle-secrete"
 
 [abonnement]
-prix_xaf    = 656
 duree_jours = 30
-code_admin  = "choisis-un-code-secret"   # te donne l'accès complet sans payer
+code_admin = "choisis-un-code-secret"
+
+# Facultatif : changer le prix d'une monnaie (sinon environ 1 €)
+[abonnement.prix]
+XAF = 656
+XOF = 656
 ```
 
-4. **Passage en production** : quand pawaPay a validé ton compte (KYC), remplace le token sandbox par le token de production et mets `environnement = "production"`.
+Prix par défaut (environ 1 €, arrondis) : XAF 656, XOF 656, CDF 3 000, USD 1,20, GHS 13, KES 150, NGN 1 800, RWF 1 700, UGX 4 300, TZS 3 000, ZMW 30, MWK 2 000, MZN 75, ETB 170, SLE 27, LSL 20. Si pawaPay impose un minimum plus élevé pour un opérateur, l'application l'applique automatiquement.
+
+4. **Passage en production** : quand pawaPay a validé ton compte (KYC) et ouvert les pays voulus, génère un token sur https://dashboard.pawapay.io et mets `environnement = "production"`.
 
 Remarques :
-- Le token pawaPay et la clé service_role ne doivent **jamais** être mis dans un fichier envoyé sur GitHub.
-- En sandbox, aucun argent réel n'est prélevé ; un bandeau l'indique sur la page Abonnement.
+- Le token pawaPay et la clé Supabase ne doivent **jamais** être mis dans un fichier envoyé sur GitHub.
+- Les pays proposés aux clients sont ceux que pawaPay a activés sur ton compte. En production, demande à pawaPay d'ouvrir les pays voulus.
 - Un abonné qui perd son code doit te contacter : tu le retrouves dans Supabase (« Table Editor » → `abonnements`, colonne `code_acces`).
 - Un nouveau paiement prolonge l'abonnement en cours de 30 jours et garde le même code.
+
+## Langue (français / anglais)
+
+Un menu en haut à droite permet de passer du français à l'anglais. Au premier passage, l'application choisit l'anglais si le navigateur du visiteur est en anglais, sinon le français. Un lien peut forcer la langue : ajouter `?lang=en` ou `?lang=fr` à l'adresse (par exemple `.../predictions?lang=en` pour un post LinkedIn en anglais).
+
+Les textes sont écrits en français dans le code et passent par `T("…")` (module `i18n.py`). Les traductions anglaises sont dans `traductions.json`. Un texte sans traduction s'affiche en français.
