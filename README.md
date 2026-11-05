@@ -88,3 +88,36 @@ destinataire = "cmfredwilliamson@gmail.com"
 ```
 
 Ne mets jamais ce mot de passe dans un fichier envoyé sur GitHub : seuls les « Secrets » de Streamlit le gardent en sécurité. Sans ces secrets (par exemple quand l'application tourne sur ton ordinateur), aucun e-mail n'est envoyé.
+
+## Abonnement payant (pawaPay + Supabase)
+
+Les pages **Prédictions** et **Tickets** sont réservées aux abonnés, au prix de **656 XAF (≈ 1 €) pour 30 jours**. Les statistiques restent gratuites. Le paiement se fait par Mobile Money (MTN MoMo et Airtel Money Congo). Après le paiement, l'abonné reçoit un **code à 6 chiffres** qui lui permet de se reconnecter avec son numéro.
+
+**Tant que les secrets ci-dessous ne sont pas renseignés, toute l'application reste gratuite.**
+
+1. **Supabase** (stockage des abonnés) : crée un projet gratuit sur https://supabase.com. Ouvre « SQL Editor », colle le contenu de `supabase_abonnements.sql`, puis « Run ». Dans « Project Settings » → « API », copie l'« URL » et la clé **service_role** (pas la clé anon).
+2. **pawaPay** : crée un compte marchand sur https://www.pawapay.io. Dans le tableau de bord **sandbox**, génère un « API token ».
+3. **Secrets Streamlit** (share.streamlit.io → ton application → « ⋮ » → « Settings » → « Secrets ») : ajoute ces lignes sous la section `[email]` existante, puis « Save » :
+
+```toml
+[pawapay]
+token        = "colle-ici-le-token-pawapay"
+environnement = "sandbox"          # mettre "production" une fois le compte validé
+
+[supabase]
+url = "https://xxxxxxxx.supabase.co"
+cle = "colle-ici-la-cle-service_role"
+
+[abonnement]
+prix_xaf    = 656
+duree_jours = 30
+code_admin  = "choisis-un-code-secret"   # te donne l'accès complet sans payer
+```
+
+4. **Passage en production** : quand pawaPay a validé ton compte (KYC), remplace le token sandbox par le token de production et mets `environnement = "production"`.
+
+Remarques :
+- Le token pawaPay et la clé service_role ne doivent **jamais** être mis dans un fichier envoyé sur GitHub.
+- En sandbox, aucun argent réel n'est prélevé ; un bandeau l'indique sur la page Abonnement.
+- Un abonné qui perd son code doit te contacter : tu le retrouves dans Supabase (« Table Editor » → `abonnements`, colonne `code_acces`).
+- Un nouveau paiement prolonge l'abonnement en cours de 30 jours et garde le même code.

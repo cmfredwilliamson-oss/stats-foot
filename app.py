@@ -13,6 +13,9 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+import time
+
+import abonnement as ab
 import stats_core as sc
 from notifications import notifier_visite
 
@@ -431,9 +434,171 @@ def page_classement():
     bouton_csv(t, f"classement_{div}.csv", "csv_classement")
 
 
+# =========================================================
+# ABONNEMENT (pawaPay + Supabase)
+# =========================================================
+CFG_AB = ab.config()
+MOTIFS_ECHEC = {
+    "PAYER_NOT_FOUND": "ce numéro n'a pas de compte Mobile Money actif",
+    "PAYMENT_NOT_APPROVED": "le paiement n'a pas été validé sur le téléphone (code PIN non saisi ou refusé)",
+    "INSUFFICIENT_BALANCE": "le solde Mobile Money est insuffisant",
+    "PAYER_LIMIT_REACHED": "le plafond de transactions du compte est atteint",
+    "WALLET_LIMIT_REACHED": "le plafond du portefeuille est atteint",
+    "NOT_FOUND": "la demande n'est pas parvenue à l'opérateur",
+}
+
+
+def date_fr(d):
+    return d.astimezone(ab.timezone(ab.timedelta(hours=1))).strftime("%d/%m/%Y à %H:%M")
+
+
+def acces_premium():
+    if not CFG_AB["actif"]:
+        return True                                   # abonnement non configuré : tout reste gratuit
+    a = st.session_state.get("abonne")
+    return bool(a and (a.get("admin") or a["fin"] > ab.maintenant()))
+
+
+def formulaire_connexion(key):
+    with st.form(f"connexion_{key}"):
+        st.markdown("**Déjà abonné ? Connecte-toi**")
+        numero = st.text_input("Numéro Mobile Money", placeholder="242 06 123 45 67", key=f"num_{key}")
+        code = st.text_input("Code d'accès (6 chiffres)", type="password", key=f"code_{key}")
+        ok = st.form_submit_button("Se connecter", use_container_width=True)
+    if ok:
+        essais = st.session_state.get("essais_connexion", 0)
+        if essais >= 5:
+            st.error("Trop de tentatives. Recharge la page dans quelques minutes.")
+            return
+        st.session_state["essais_connexion"] = essais + 1
+        if CFG_AB["code_admin"] and code.strip() == CFG_AB["code_admin"]:
+            st.session_state["abonne"] = {"msisdn": "admin", "fin": ab.maintenant(), "admin": True}
+            st.rerun()
+        try:
+            res = ab.connexion(CFG_AB, numero, code)
+        except Exception:
+            res = None
+            st.error("Service d'abonnement momentanément indisponible. Réessaie dans un instant.")
+            return
+        if res:
+            st.session_state["abonne"] = {"msisdn": res[0], "fin": res[1], "code": code.strip()}
+            st.session_state["essais_connexion"] = 0
+            st.rerun()
+        else:
+            st.error("Numéro ou code incorrect, ou abonnement expiré.")
+
+
+def verrou(titre):
+    """À appeler en tête d'une page payante : affiche le paywall et renvoie False si pas d'accès."""
+    if acces_premium():
+        return True
+    st.header(titre)
+    st.info(f"🔒 **Contenu réservé aux abonnés** : pronostics des prochains matchs et tickets, "
+            f"pour **{CFG_AB['prix']} XAF ({CFG_AB['prix'] / 655.957:.0f} €) les {CFG_AB['duree']} jours**, "
+            "payables par MTN Mobile Money ou Airtel Money.")
+    a, b = st.columns(2)
+    with a:
+        st.markdown("**Pas encore abonné ?**")
+        st.write("L'abonnement se fait en une minute depuis ton téléphone.")
+        st.page_link(PAGE_ABONNEMENT, label="💳 S'abonner maintenant", use_container_width=True)
+    with b:
+        formulaire_connexion(titre)
+    return False
+
+
+def page_abonnement():
+    st.header("💳 Abonnement")
+    if not CFG_AB["actif"]:
+        st.info("Les abonnements ne sont pas encore activés : toutes les pages sont gratuites pour le moment.")
+        return
+    if CFG_AB["sandbox"]:
+        st.warning("Mode test (sandbox) : aucun argent réel n'est prélevé.")
+    a = st.session_state.get("abonne")
+    if a and a.get("admin"):
+        st.success("Accès administrateur actif.")
+        return
+    if a and a["fin"] > ab.maintenant():
+        st.success(f"✅ Ton abonnement est actif jusqu'au **{date_fr(a['fin'])}**.")
+        if a.get("code"):
+            st.markdown(f"Ton code d'accès : **{a['code']}**. Garde-le : il te sert à te reconnecter.")
+        st.markdown(f"Tu peux prolonger dès maintenant : {CFG_AB['duree']} jours de plus seront ajoutés "
+                    "à la fin de ton abonnement actuel.")
+
+    st.subheader(f"S'abonner : {CFG_AB['prix']} XAF pour {CFG_AB['duree']} jours")
+    st.markdown("1. Saisis ton numéro MTN Mobile Money ou Airtel Money.\n"
+                "2. Une demande de paiement arrive sur ton téléphone : valide-la avec ton **code PIN**.\n"
+                "3. Ton **code d'accès** s'affiche ici : garde-le pour te reconnecter.")
+
+    paiement = st.session_state.get("paiement")
+    if not paiement:
+        with st.form("payer"):
+            numero = st.text_input("Numéro Mobile Money", placeholder="242 06 123 45 67")
+            go = st.form_submit_button(f"Payer {CFG_AB['prix']} XAF", type="primary", use_container_width=True)
+        if go:
+            try:
+                msisdn, provider = ab.predire_operateur(CFG_AB, numero)
+                deposit_id = ab.nouveau_deposit_id()
+                ab.enregistrer_demande(CFG_AB, deposit_id, msisdn, provider)   # enregistré AVANT l'envoi
+                statut, raison = ab.demander_paiement(CFG_AB, msisdn, provider, deposit_id)
+            except ValueError as e:
+                st.error(str(e))
+                return
+            except Exception:
+                st.error("Service de paiement momentanément indisponible. Réessaie dans un instant.")
+                return
+            if statut == "REJECTED":
+                st.error(f"Paiement refusé : {raison}")
+                return
+            st.session_state["paiement"] = {"id": deposit_id, "msisdn": msisdn, "provider": provider}
+            st.rerun()
+        formulaire_connexion("abonnement")
+        return
+
+    # Paiement en cours : on interroge pawaPay jusqu'au résultat (environ 2 minutes maximum)
+    op = ab.OPERATEURS.get(paiement["provider"], "Mobile Money")
+    st.info(f"📱 Une demande de paiement {op} de **{CFG_AB['prix']} XAF** a été envoyée au "
+            f"**+{paiement['msisdn']}**. Valide-la sur ton téléphone avec ton code PIN.")
+    etat, info = "EN_ATTENTE", None
+    with st.spinner("En attente de ta validation…"):
+        for _ in range(24):
+            try:
+                etat, info = ab.finaliser(CFG_AB, paiement["id"], paiement["msisdn"])
+            except Exception:
+                etat = "EN_ATTENTE"
+            if etat != "EN_ATTENTE":
+                break
+            time.sleep(5)
+    if etat == "PAYE":
+        fin, code = info
+        st.session_state["abonne"] = {"msisdn": paiement["msisdn"], "fin": fin, "code": code}
+        st.session_state.pop("paiement", None)
+        st.balloons()
+        st.success(f"✅ Paiement reçu ! Abonnement actif jusqu'au **{date_fr(fin)}**.")
+        st.markdown(f"### Ton code d'accès : `{code}`")
+        st.caption("Note-le bien : avec ton numéro, il te permet de te reconnecter sur n'importe quel appareil.")
+        st.page_link(PAGE_TICKETS_DEFAUT, label="🎟️ Voir les tickets", use_container_width=True)
+    elif etat == "ECHEC":
+        st.session_state.pop("paiement", None)
+        st.error(f"❌ Paiement non abouti : {MOTIFS_ECHEC.get(info, 'le paiement a échoué')}. "
+                 "Aucun montant n'a été débité. Tu peux réessayer.")
+        if st.button("Réessayer"):
+            st.rerun()
+    else:
+        st.warning("Toujours en attente de validation. Si tu as déjà validé, clique sur « Vérifier » ; "
+                   "sinon, valide la demande sur ton téléphone.")
+        c1, c2 = st.columns(2)
+        if c1.button("🔄 Vérifier", use_container_width=True):
+            st.rerun()
+        if c2.button("Annuler", use_container_width=True):
+            st.session_state.pop("paiement", None)
+            st.rerun()
+
+
 def page_tickets(nom):
     titre = {"Combiné": "combiné", "BTTS - les deux équipes marquent": "les deux équipes marquent (BTTS)",
              "12 Yes - victoire et les deux équipes marquent": "12 Yes : victoire et les deux équipes marquent"}
+    if not verrou(f"🎟️ Ticket {titre.get(nom, nom.lower())}"):
+        return
     st.header(f"🎟️ Ticket {titre.get(nom, nom.lower())}")
     modeles = sc.modeles_par_championnat(M)
     parts = sc.parts_1re_periode(M)
@@ -574,6 +739,8 @@ def page_donnees():
 
 
 def page_predictions():
+    if not verrou("🔮 Prédictions"):
+        return
     st.header("🔮 Prédictions")
     modeles = sc.modeles_par_championnat(M)
     st.markdown("Modèle de **Poisson** : pour chaque équipe, forces d'attaque et de défense à domicile et à "
@@ -689,8 +856,14 @@ st.markdown("""
 div[data-testid="stMetricValue"] {font-size: 1.9rem;}
 </style>""", unsafe_allow_html=True)
 
-h1, h2 = st.columns([5, 1], vertical_alignment="center")
+h1, h3, h2 = st.columns([4, 1.4, 1], vertical_alignment="center")
 h1.markdown("### ⚽ Stats & Prédictions Foot")
+if CFG_AB["actif"]:
+    _a = st.session_state.get("abonne")
+    if _a and (_a.get("admin") or _a["fin"] > ab.maintenant()):
+        h3.caption("👤 Administrateur" if _a.get("admin") else f"✅ Abonné jusqu'au {_a['fin'].strftime('%d/%m/%Y')}")
+    else:
+        h3.caption("🔒 Non abonné")
 with h2.popover("⚙️ Paramètres", use_container_width=True):
     saison = st.text_input("Saison européenne", value=sc.SAISON, help="2627 = 2026-27, 2526 = 2025-26")
     codes_main = st.multiselect("Championnats européens", sc.MAIN_CODES, default=sc.MAIN_CODES, format_func=libelle)
@@ -740,9 +913,13 @@ def section(nums):
     return [creer_page(e) for e in ETATS if e[0] in nums]
 
 
+PAGE_ABONNEMENT = st.Page(page_abonnement, title="Abonnement", icon="💳", url_path="abonnement")
+PAGES_TICKETS = [creer_page_ticket(x) for x in ["Combiné"] + list(sc.TICKETS)]
+PAGE_TICKETS_DEFAUT = PAGES_TICKETS[0]
 menu = {
     "": [st.Page(page_donnees, title="Accueil", icon="🏠", url_path="donnees", default=True),
-         st.Page(page_predictions, title="Prédictions", icon="🔮", url_path="predictions")],
+         st.Page(page_predictions, title="Prédictions", icon="🔮", url_path="predictions"),
+         PAGE_ABONNEMENT],
     "🎯 Buts du match": section(range(4, 12)),
     "⏱️ Mi-temps": section(range(15, 21)),
     "⚽ Marqués": section(range(21, 27)),
@@ -750,7 +927,7 @@ menu = {
     "📈 Forme": section([12, 13, 14, 27, 28, 41]),   # saison complète puis 5 derniers matchs
     "📊 Stats": [st.Page(page_classement, title="Classement des championnats", icon="🏆",
                          url_path="classement")] + [creer_page_stats(e) for e in ETATS_STATS],
-    "🎟️ Tickets": [creer_page_ticket(x) for x in ["Combiné"] + list(sc.TICKETS)],   # dernier onglet
+    "🎟️ Tickets": PAGES_TICKETS,   # dernier onglet
 }
 
 st.navigation(menu, position="top").run()
