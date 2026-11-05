@@ -600,23 +600,42 @@ TICKETS = {
 }
 
 
-def construire_ticket(pred, type_ticket, n=10):
-    return _selection(pred, TICKETS[type_ticket], n)
+# Probabilité minimale par défaut (en %) pour qu'un match entre dans un ticket.
+# Adaptée à chaque événement : un nul ou un score exact n'atteint jamais les niveaux d'une victoire nette.
+SEUILS_DEFAUT = {
+    "Victoires": 60, "Défaites": 60, "Matchs nuls": 30, "Buts marqués": 75,
+    "BTTS - les deux équipes marquent": 60, "12 Yes - victoire et les deux équipes marquent": 35,
+    "Plus de buts en 1re période": 35, "Plus de buts en 2e période": 50, "Scores exacts": 12,
+    "Over 1.5 buts": 75, "Over 2.5 buts": 60,
+}
 
 
-def ticket_combine(pred, n=10):
+def construire_ticket(pred, type_ticket, n=10, seuil=None):
+    """Les n matchs où l'événement est le plus probable, en ne gardant que ceux au-dessus du seuil (en %)."""
+    t = _selection(pred, TICKETS[type_ticket], len(pred))
+    if seuil is not None and not t.empty:
+        t = t[t["proba"] * 100 >= seuil]
+    return t.head(n).reset_index(drop=True)
+
+
+def ticket_combine(pred, n=10, seuils=None):
     """
-    Ticket combiné : le n°1 de chaque type de ticket (un match ne sert qu'une fois),
-    complété avec les meilleurs pronostics restants, tous types confondus, jusqu'à n matchs.
+    Ticket combiné : le meilleur pronostic de chaque type de ticket (un match ne sert qu'une fois),
+    complété par les pronostics restants les plus probables. Seuls les pronostics au-dessus
+    du seuil de leur type sont retenus.
     """
     if pred.empty:
         return pd.DataFrame()
+    seuils = seuils or SEUILS_DEFAUT
     candidats = []
     for nom, fn in TICKETS.items():
         t = _selection(pred, fn, len(pred))
+        t = t[t["proba"] * 100 >= seuils.get(nom, 0)]
         t["ticket_type"] = nom
         candidats.append(t)
     cand = pd.concat(candidats, ignore_index=True)
+    if cand.empty:
+        return pd.DataFrame()
     choisis, matchs_utilises = [], set()
     for nom in TICKETS:                                     # 1) le top de chaque événement
         c = cand[(cand["ticket_type"] == nom) & (~cand["match"].isin(matchs_utilises))]

@@ -466,6 +466,15 @@ def page_tickets(nom):
                          format_func=libelle, key=f"w_d_{nom}")
     ss["t_n"], ss["t_periode"], ss["t_divs"] = n, periode, divs
 
+    # Probabilité minimale : un match n'entre dans le ticket que si sa probabilité dépasse ce seuil
+    seuils = {k: ss.get(f"seuil_{k}", v) for k, v in sc.SEUILS_DEFAUT.items()}
+    if nom != "Combiné":
+        seuil = st.slider("Probabilité minimale de réussite (%)", 5, 95, int(seuils[nom]), step=5, key=f"w_s_{nom}",
+                          help="Seuls les matchs dont la probabilité atteint ce niveau entrent dans le ticket. "
+                               "Le seuil par défaut est adapté à l'événement (un nul ou un score exact n'atteint "
+                               "jamais le niveau d'une victoire nette).")
+        ss[f"seuil_{nom}"] = seuil
+
     fx = fixtures[fixtures["div"].isin(divs)]
     if periode.startswith("j"):                                   # fenêtre glissante à partir d'aujourd'hui
         fx = fx[fx["date"] <= aujourd_hui + pd.Timedelta(days=int(periode[1:]))]
@@ -476,19 +485,20 @@ def page_tickets(nom):
         st.info("Aucun match à venir pour ces critères (période, championnats, minimum de matchs joués).")
         return
     st.caption(f"{len(pred)} matchs à venir analysés · équipes ayant joué au moins {MIN_MATCHES} matchs.")
-    if int(n) > len(pred):
-        st.info(f"Tu as demandé {int(n)} matchs, mais seulement **{len(pred)} matchs à venir** remplissent les "
-                "critères : le ticket ne peut pas en contenir plus. Pour en avoir davantage, choisis "
-                "« Tous les matchs à venir », ajoute des championnats, ou baisse le minimum de matchs joués "
-                "dans ⚙️ Paramètres. Les matchs du week-end sont généralement publiés en milieu de semaine.")
 
     if nom == "Combiné":
-        t = sc.ticket_combine(pred, int(n))
+        t = sc.ticket_combine(pred, int(n), seuils)
         st.caption("Le meilleur pronostic de chaque type de ticket (un match n'est utilisé qu'une fois), "
-                   "complété par les pronostics les plus probables restants.")
+                   "complété par les pronostics les plus probables restants. Chaque pronostic doit atteindre "
+                   "la probabilité minimale réglée dans son propre ticket.")
     else:
-        t = sc.construire_ticket(pred, nom, int(n))
-        st.caption("Les matchs où cet événement est le plus probable selon le modèle.")
+        t = sc.construire_ticket(pred, nom, int(n), seuil)
+        st.caption(f"Les matchs où cet événement est le plus probable selon le modèle, à partir de {seuil} %.")
+    if len(t) < int(n):
+        st.info(f"Seulement **{len(t)} match(s)** sur les {len(pred)} à venir atteignent la probabilité minimale : "
+                "le ticket est volontairement plus court que demandé. Pour en avoir plus, baisse le seuil "
+                "(au risque d'un ticket moins sûr), élargis la période ou ajoute des championnats.")
+    if nom != "Combiné":
         if nom == "Défaites":
             st.caption("« Défaite X » : l'équipe X perd le match (son adversaire gagne).")
         if nom.startswith("12 Yes"):
