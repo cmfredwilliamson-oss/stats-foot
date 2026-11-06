@@ -423,7 +423,66 @@ def charger_prochains_matchs():
     return fx.sort_values(["date", "time"]).reset_index(drop=True)
 
 
+def _cle_nom(nom):
+    """Nom simplifié pour comparer : minuscules, sans accents, ponctuation ni FC / CF / AC…"""
+    import unicodedata, re
+    n = unicodedata.normalize("NFKD", str(nom)).encode("ascii", "ignore").decode().lower()
+    n = re.sub(r"[^a-z0-9 ]", " ", n)
+    mots = [m for m in n.split() if m not in {"fc", "cf", "ac", "sc", "afc", "cd", "ca", "club", "de", "the"}]
+    return " ".join(mots)
+
+
+def _trouver_equipe(nom, equipes):
+    """Nom exact s'il existe, sinon l'équipe du championnat au nom le plus proche (ou None)."""
+    import difflib
+    if nom in equipes:
+        return nom
+    cles = {_cle_nom(e): e for e in equipes}
+    c = _cle_nom(nom)
+    if c in cles:
+        return cles[c]
+    proche = difflib.get_close_matches(c, list(cles), n=1, cutoff=0.8)
+    return cles[proche[0]] if proche else None
+
+
+def aligner_equipes(fixtures, modeles):
+    """
+    Remplace les noms d'équipes des prochains matchs par ceux des résultats quand ils diffèrent
+    légèrement (ex. « Paris SG » / « Paris Saint Germain »), pour ne pas perdre de matchs.
+    """
+    if fixtures.empty:
+        return fixtures
+    fx = fixtures.copy()
+    for i, r in fx.iterrows():
+        mod = modeles.get(r["div"])
+        if not mod:
+            continue
+        equipes = mod["forces"].index
+        for col in ("home_team", "away_team"):
+            trouve = _trouver_equipe(r[col], equipes)
+            if trouve:
+                fx.at[i, col] = trouve
+    return fx
+
+
+def matchs_sans_prediction(fixtures, modeles):
+    """Prochains matchs écartés, avec la raison (championnat non chargé ou équipe inconnue)."""
+    lignes = []
+    for _, r in aligner_equipes(fixtures, modeles).iterrows():
+        mod = modeles.get(r["div"])
+        if not mod:
+            raison = "Championnat non chargé"
+        elif r["home_team"] not in mod["forces"].index or r["away_team"] not in mod["forces"].index:
+            raison = "Équipe sans match joué cette saison"
+        else:
+            continue
+        lignes.append({"date": r["date"], "time": r["time"], "league": r["league"] if pd.notna(r["league"]) else r["div"],
+                       "match": f"{r['home_team']} - {r['away_team']}", "raison": raison})
+    return pd.DataFrame(lignes)
+
+
 def predire_prochains_matchs(fixtures, modeles):
+    fixtures = aligner_equipes(fixtures, modeles)
     lignes = []
     for _, r in fixtures.iterrows():
         mod = modeles.get(r["div"])
@@ -515,6 +574,7 @@ def probas_periodes(lam_total, part_1re):
 
 def predictions_detaillees(fixtures, modeles, parts, min_matches=0):
     """Toutes les probabilités utiles aux tickets, une ligne par prochain match."""
+    fixtures = aligner_equipes(fixtures, modeles)
     lignes = []
     for _, r in fixtures.iterrows():
         mod = modeles.get(r["div"])

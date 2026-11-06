@@ -254,6 +254,9 @@
  "Championnat": {
   "en": "League"
  },
+ "Championnat non chargé": {
+  "en": "League not loaded"
+ },
  "Championnats": {
   "en": "Leagues"
  },
@@ -427,6 +430,9 @@
  },
  "Le meilleur pronostic de chaque type de ticket (un match n'est utilisé qu'une fois), complété par les pronostics les plus probables restants. Chaque pronostic doit atteindre la probabilité minimale réglée dans son propre ticket.": {
   "en": "The best pick of each ticket type (each match is used only once), completed with the most likely remaining picks. Each pick must reach the minimum probability set in its own ticket."
+ },
+ "Le modèle a besoin des résultats de la saison de chaque équipe. Les matchs d'un championnat non chargé (voir ⚙️ Paramètres) ou d'une équipe sans match joué ne peuvent pas être prédits.": {
+  "en": "The model needs each team's results for the season. Matches from a league that is not loaded (see ⚙️ Settings) or involving a team with no match played cannot be predicted."
  },
  "Les abonnements ne sont pas encore activés : toutes les pages sont gratuites pour le moment.": {
   "en": "Subscriptions are not activated yet: all pages are free for now."
@@ -842,6 +848,9 @@
  "Périodes égales · équipes": {
   "en": "Equal halves · teams"
  },
+ "Raison": {
+  "en": "Reason"
+ },
  "Rang": {
   "en": "Rank"
  },
@@ -1031,6 +1040,9 @@
  "Équipe": {
   "en": "Team"
  },
+ "Équipe sans match joué cette saison": {
+  "en": "Team with no match played this season"
+ },
  "Équipes": {
   "en": "Teams"
  },
@@ -1081,6 +1093,9 @@
  },
  "Équipes qui n'encaissent pas (clean sheet)": {
   "en": "Teams that don't concede (clean sheet)"
+ },
+ "ℹ️ {n} match(s) du programme sans prédiction": {
+  "en": "ℹ️ {n} scheduled match(es) without a prediction"
  },
  "⏱️ Mi-temps": {
   "en": "⏱️ Halves"

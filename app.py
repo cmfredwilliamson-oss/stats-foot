@@ -168,7 +168,7 @@ def charger(saison, codes_main, codes_extra):
         return _charger(saison, codes_main, codes_extra)
 
 
-@st.cache_data(ttl=3 * 3600, show_spinner=False)
+@st.cache_data(ttl=3600, show_spinner=False)          # programme rechargé toutes les heures
 def _charger_fixtures():
     return sc.charger_prochains_matchs()
 
@@ -803,6 +803,22 @@ def page_donnees():
     bouton_csv(vue, "matchs.csv", "csv_data")
 
 
+def afficher_matchs_ecartes(fixtures, modeles):
+    """Matchs du programme sans prédiction, avec la raison (repliés par défaut)."""
+    if fixtures.empty:
+        return
+    ecartes = sc.matchs_sans_prediction(fixtures, modeles)
+    if ecartes.empty:
+        return
+    with st.expander(T("ℹ️ {n} match(s) du programme sans prédiction", n=len(ecartes))):
+        st.caption(T("Le modèle a besoin des résultats de la saison de chaque équipe. Les matchs d'un championnat "
+                     "non chargé (voir ⚙️ Paramètres) ou d'une équipe sans match joué ne peuvent pas être prédits."))
+        vue = pd.DataFrame({"Date": ecartes["date"].dt.strftime("%d/%m/%Y"), "Heure": ecartes["time"],
+                            "Championnat": ecartes["league"], "Match": ecartes["match"],
+                            "Raison": [T(x) for x in ecartes["raison"]]})
+        tableau(vue, hide_index=True, use_container_width=True)
+
+
 def page_predictions():
     if not verrou(T("🔮 Prédictions")):
         return
@@ -822,6 +838,7 @@ def page_predictions():
         if pred.empty:
             st.info(T("Aucun match à venir (aujourd'hui ou les jours suivants) pour les championnats chargés. "
                     "Utilise « Match au choix »."))
+            afficher_matchs_ecartes(fixtures, modeles)
         else:
             a, b, c = st.columns([2, 2, 1.5])
             nb_par_date = pred.groupby("date").size()
@@ -858,6 +875,7 @@ def page_predictions():
             st.caption(T("Cotes 1 / N / 2 : cotes moyennes du marché. "
                        "Cote « juste » selon le modèle = 100 / pourcentage."))
             bouton_csv(vue, "predictions.csv", "csv_pred")
+        afficher_matchs_ecartes(fixtures, modeles)
 
     with sous[1]:
         a, b, c = st.columns(3)
