@@ -796,6 +796,22 @@ def page_donnees():
     j["Championnat"] = j["Code"].map(sc.noms)
     tableau(j[["Championnat", "Code", "Statut", "Matchs"]], hide_index=True, use_container_width=True)
 
+    try:
+        _, corr = sc.correspondance_equipes(_charger_openfootball(saison), M, details=True)
+    except Exception:
+        corr = pd.DataFrame()
+    if not corr.empty:
+        manquants = int((corr["methode"] == "Non trouvé").sum())
+        titre = T("🔗 Noms d'équipes : calendrier → résultats") + (T(" ({n} non trouvé(s))", n=manquants) if manquants else " ✅")
+        with st.expander(titre):
+            st.caption(T("Le second calendrier écrit parfois les noms autrement. Ordre de recherche : le fichier "
+                         "correspondances.json (modifiable), puis les matchs déjà joués (même date et même score), "
+                         "puis l'orthographe la plus proche."))
+            vue_c = pd.DataFrame({"Championnat": corr["league"], "Nom dans le calendrier": corr["calendrier"],
+                                  "Nom dans les résultats": corr["resultats"],
+                                  "Méthode": [T(x) for x in corr["methode"]]})
+            tableau(vue_c, hide_index=True, use_container_width=True, height=min(38 + 35 * len(vue_c), 500))
+
     st.subheader(T("Tous les matchs"))
     a, b = st.columns(2)
     with a:

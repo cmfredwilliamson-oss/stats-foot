@@ -473,13 +473,34 @@ def _heure_uk(date, heure, code):
         return heure or ""
 
 
-def correspondance_equipes(of, matchs):
+def charger_dictionnaire():
+    """Dictionnaire manuel correspondances.json : {div: {nom calendrier: nom résultats}}."""
+    import json
+    chemin = os.path.join(os.path.dirname(os.path.abspath(__file__)), "correspondances.json")
+    try:
+        with open(chemin, encoding="utf-8") as f:
+            return {k: v for k, v in json.load(f).items() if isinstance(v, dict)}
+    except Exception:
+        return {}
+
+
+def correspondance_equipes(of, matchs, details=False):
     """
-    Nom openfootball -> nom de la source principale, trouvé grâce aux matchs déjà joués :
-    même championnat, même date (à un jour près) et même score. Le nom le plus souvent associé gagne.
+    Nom du calendrier openfootball -> nom de la source principale, dans cet ordre :
+    1. dictionnaire correspondances.json (si le nom indiqué existe bien dans les résultats) ;
+    2. matchs déjà joués : même championnat, même date (à un jour près) et même score ;
+    3. orthographe la plus proche.
+    details=True renvoie aussi un tableau (championnat, calendrier, résultats, méthode).
     """
     if of.empty or matchs.empty:
-        return {}
+        return ({}, pd.DataFrame()) if details else {}
+    equipes = {d: set(matchs.loc[matchs["div"] == d, "home_team"]) | set(matchs.loc[matchs["div"] == d, "away_team"])
+               for d in of["div"].unique()}
+    corr, methode = {}, {}
+    for div, noms_div in charger_dictionnaire().items():
+        for a, b in noms_div.items():
+            if b in equipes.get(div, ()):
+                corr[(div, a)], methode[(div, a)] = b, "Dictionnaire"
     joues = of.dropna(subset=["fthg", "ftag"]).copy()
     joues["date"] = pd.to_datetime(joues["date"], errors="coerce")
     m = matchs[["div", "date", "home_team", "away_team", "fthg", "ftag"]].dropna()
@@ -491,21 +512,25 @@ def correspondance_equipes(of, matchs):
             for a, b in ((r["team1"], r["home_team"]), (r["team2"], r["away_team"])):
                 votes.setdefault((r["div"], a), {}).setdefault(b, 0)
                 votes[(r["div"], a)][b] += 3 if decalage == 0 else 1
-    corr = {}
-    for (div, a), v in votes.items():
+    for cle, v in votes.items():
         meilleur = max(v, key=v.get)
-        if v[meilleur] >= 3:                     # au moins un match identique à la même date
-            corr[(div, a)] = meilleur
-    # noms restants : rapprochement par l'orthographe
+        if cle not in corr and v[meilleur] >= 3:
+            corr[cle], methode[cle] = meilleur, "Matchs joués"
     for div in of["div"].unique():
-        equipes = matchs.loc[matchs["div"] == div, "home_team"].unique()
         deja = {v for (d, _), v in corr.items() if d == div}
         for a in pd.unique(of.loc[of["div"] == div, ["team1", "team2"]].values.ravel()):
             if (div, a) not in corr:
-                t = _trouver_equipe(a, [e for e in equipes if e not in deja])
+                t = _trouver_equipe(a, [e for e in equipes.get(div, ()) if e not in deja])
                 if t:
-                    corr[(div, a)] = t
-    return corr
+                    corr[(div, a)], methode[(div, a)] = t, "Orthographe"
+    if not details:
+        return corr
+    lignes = []
+    for div in sorted(of["div"].unique()):
+        for a in sorted(pd.unique(of.loc[of["div"] == div, ["team1", "team2"]].values.ravel())):
+            lignes.append({"div": div, "league": noms.get(div, div), "calendrier": a,
+                           "resultats": corr.get((div, a), ""), "methode": methode.get((div, a), "Non trouvé")})
+    return corr, pd.DataFrame(lignes)
 
 
 def prochains_matchs_openfootball(of, matchs, depuis, jours=14):

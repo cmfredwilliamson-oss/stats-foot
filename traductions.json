@@ -1,4 +1,7 @@
 {
+ " ({n} non trouvé(s))": {
+  "en": " ({n} not found)"
+ },
  " La médiane est la valeur du milieu : la moitié des matchs sont au-dessus, la moitié en dessous.": {
   "en": " The median is the middle value: half of the matches are above it, half below."
  },
@@ -350,6 +353,9 @@
  "Derniers matchs": {
   "en": "Last matches"
  },
+ "Dictionnaire": {
+  "en": "Dictionary"
+ },
  "Diff": {
   "en": "GD"
  },
@@ -433,6 +439,9 @@
  },
  "Le modèle a besoin des résultats de la saison de chaque équipe. Les matchs d'un championnat non chargé (voir ⚙️ Paramètres) ou d'une équipe sans match joué ne peuvent pas être prédits.": {
   "en": "The model needs each team's results for the season. Matches from a league that is not loaded (see ⚙️ Settings) or involving a team with no match played cannot be predicted."
+ },
+ "Le second calendrier écrit parfois les noms autrement. Ordre de recherche : le fichier correspondances.json (modifiable), puis les matchs déjà joués (même date et même score), puis l'orthographe la plus proche.": {
+  "en": "The second calendar sometimes spells names differently. Search order: the correspondances.json file (editable), then matches already played (same date and same score), then the closest spelling."
  },
  "Les abonnements ne sont pas encore activés : toutes les pages sont gratuites pour le moment.": {
   "en": "Subscriptions are not activated yet: all pages are free for now."
@@ -701,6 +710,9 @@
  "Médiane à l'extérieur": {
   "en": "Away median"
  },
+ "Méthode": {
+  "en": "Method"
+ },
  "N": {
   "en": "D"
  },
@@ -710,11 +722,20 @@
  "Nom": {
   "en": "Name"
  },
+ "Nom dans le calendrier": {
+  "en": "Name in the calendar"
+ },
+ "Nom dans les résultats": {
+  "en": "Name in the results"
+ },
  "Nombre d'équipes": {
   "en": "Number of teams"
  },
  "Nombre de matchs": {
   "en": "Number of matches"
+ },
+ "Non trouvé": {
+  "en": "Not found"
  },
  "Note-le bien : avec ton numéro, il te permet de te reconnecter sur n'importe quel appareil.": {
   "en": "Write it down: with your number, it lets you log in again on any device."
@@ -745,6 +766,9 @@
  },
  "Ordre": {
   "en": "Order"
+ },
+ "Orthographe": {
+  "en": "Spelling"
  },
  "Over 1.5 buts": {
   "en": "Over 1.5 goals"
@@ -1186,6 +1210,9 @@
  },
  "🔒 Non abonné": {
   "en": "🔒 Not subscribed"
+ },
+ "🔗 Noms d'équipes : calendrier → résultats": {
+  "en": "🔗 Team names: calendar → results"
  },
  "🔮 Prédictions": {
   "en": "🔮 Predictions"
