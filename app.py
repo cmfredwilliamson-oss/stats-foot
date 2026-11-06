@@ -173,9 +173,21 @@ def _charger_fixtures():
     return sc.charger_prochains_matchs()
 
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def _charger_openfootball(saison):
+    return sc.charger_openfootball(saison)
+
+
 def charger_fixtures():
+    """Programme de la source principale, complété par le calendrier openfootball (matchs manquants)."""
     with st.spinner(T("📅 Récupération des prochains matchs…")):
-        return _charger_fixtures()
+        fx = _charger_fixtures()
+        try:
+            autres = sc.prochains_matchs_openfootball(_charger_openfootball(saison), M, aujourdhui())
+            autres = autres[autres["div"].isin(M["div"].unique())] if not autres.empty else autres
+            return sc.completer_programme(fx, autres)
+        except Exception:
+            return fx
 
 
 # =========================================================

@@ -423,6 +423,123 @@ def charger_prochains_matchs():
     return fx.sort_values(["date", "time"]).reset_index(drop=True)
 
 
+
+# =========================================================
+# 4 bis. CALENDRIER COMPLET (openfootball, GitHub) - complète le programme des prochains matchs
+# =========================================================
+# Le fichier des prochains matchs de la source principale n'est mis à jour que quelques fois par
+# semaine : certains jours, les matchs européens du jour n'y sont pas encore. openfootball publie
+# le calendrier complet de la saison des grands championnats.
+OPENFOOTBALL = {"E0": "en.1", "E1": "en.2", "D1": "de.1", "SP1": "es.1", "I1": "it.1",
+                "F1": "fr.1", "P1": "pt.1", "N1": "nl.1"}
+FUSEAU = {"E0": "Europe/London", "E1": "Europe/London", "P1": "Europe/Lisbon"}   # sinon Europe/Paris
+URL_OPENFOOTBALL = "https://raw.githubusercontent.com/openfootball/football.json/master/{saison}/{fichier}.json"
+
+
+def charger_openfootball(saison=SAISON, codes=None):
+    """Tous les matchs de la saison (joués ou non) : div, date, time, team1, team2, fthg, ftag."""
+    import json, urllib.request
+    s = f"20{saison[:2]}-{saison[2:]}"
+    lignes = []
+    for code, fichier in OPENFOOTBALL.items():
+        if codes is not None and code not in codes:
+            continue
+        try:
+            if _DATA_DIR:
+                with open(os.path.join(_DATA_DIR, "openfootball", f"{fichier}.json"), encoding="utf-8") as f:
+                    d = json.load(f)
+            else:
+                with urllib.request.urlopen(URL_OPENFOOTBALL.format(saison=s, fichier=fichier), timeout=20) as r:
+                    d = json.load(r)
+        except Exception:
+            continue
+        for m in d.get("matches", []):
+            sc_ = m.get("score")
+            ft = sc_ if isinstance(sc_, list) else ((sc_ or {}).get("ft") or [None, None])
+            if len(ft) != 2:
+                ft = [None, None]
+            lignes.append({"div": code, "date": m.get("date"), "time": m.get("time", ""),
+                           "team1": m.get("team1"), "team2": m.get("team2"), "fthg": ft[0], "ftag": ft[1]})
+    return pd.DataFrame(lignes, columns=["div", "date", "time", "team1", "team2", "fthg", "ftag"])
+
+
+def _heure_uk(date, heure, code):
+    """Heure locale du championnat -> heure de Londres (comme le reste des données)."""
+    try:
+        from zoneinfo import ZoneInfo
+        d = pd.Timestamp(f"{date} {heure}").tz_localize(ZoneInfo(FUSEAU.get(code, "Europe/Paris")))
+        return d.tz_convert(ZoneInfo("Europe/London")).strftime("%H:%M")
+    except Exception:
+        return heure or ""
+
+
+def correspondance_equipes(of, matchs):
+    """
+    Nom openfootball -> nom de la source principale, trouvé grâce aux matchs déjà joués :
+    même championnat, même date (à un jour près) et même score. Le nom le plus souvent associé gagne.
+    """
+    if of.empty or matchs.empty:
+        return {}
+    joues = of.dropna(subset=["fthg", "ftag"]).copy()
+    joues["date"] = pd.to_datetime(joues["date"], errors="coerce")
+    m = matchs[["div", "date", "home_team", "away_team", "fthg", "ftag"]].dropna()
+    votes = {}
+    for decalage in (0, 1, -1):
+        j = joues.assign(date=joues["date"] + pd.Timedelta(days=decalage))
+        x = j.merge(m, on=["div", "date", "fthg", "ftag"])
+        for _, r in x.iterrows():
+            for a, b in ((r["team1"], r["home_team"]), (r["team2"], r["away_team"])):
+                votes.setdefault((r["div"], a), {}).setdefault(b, 0)
+                votes[(r["div"], a)][b] += 3 if decalage == 0 else 1
+    corr = {}
+    for (div, a), v in votes.items():
+        meilleur = max(v, key=v.get)
+        if v[meilleur] >= 3:                     # au moins un match identique à la même date
+            corr[(div, a)] = meilleur
+    # noms restants : rapprochement par l'orthographe
+    for div in of["div"].unique():
+        equipes = matchs.loc[matchs["div"] == div, "home_team"].unique()
+        deja = {v for (d, _), v in corr.items() if d == div}
+        for a in pd.unique(of.loc[of["div"] == div, ["team1", "team2"]].values.ravel()):
+            if (div, a) not in corr:
+                t = _trouver_equipe(a, [e for e in equipes if e not in deja])
+                if t:
+                    corr[(div, a)] = t
+    return corr
+
+
+def prochains_matchs_openfootball(of, matchs, depuis, jours=14):
+    """Matchs des `jours` prochains jours du calendrier openfootball, avec les noms de la source principale."""
+    if of.empty:
+        return pd.DataFrame()
+    corr = correspondance_equipes(of, matchs)
+    a_venir = of[of["fthg"].isna()].copy()
+    a_venir["date"] = pd.to_datetime(a_venir["date"], errors="coerce")
+    a_venir = a_venir[(a_venir["date"] >= depuis) & (a_venir["date"] <= depuis + pd.Timedelta(days=jours))]
+    if a_venir.empty:
+        return pd.DataFrame()
+    return pd.DataFrame({
+        "div": a_venir["div"], "date": a_venir["date"],
+        "time": [_heure_uk(d.strftime("%Y-%m-%d"), t, c) for d, t, c in zip(a_venir["date"], a_venir["time"], a_venir["div"])],
+        "home_team": [corr.get((d, t), t) for d, t in zip(a_venir["div"], a_venir["team1"])],
+        "away_team": [corr.get((d, t), t) for d, t in zip(a_venir["div"], a_venir["team2"])],
+        "odds_h": np.nan, "odds_d": np.nan, "odds_a": np.nan,
+        "league": a_venir["div"].map(noms)})
+
+
+def completer_programme(fixtures, autres):
+    """Ajoute les matchs absents du programme principal (même championnat, même date, mêmes équipes)."""
+    if autres is None or autres.empty:
+        return fixtures
+    if fixtures.empty:
+        return autres.sort_values(["date", "time"]).reset_index(drop=True)
+    # dans un championnat, un même « domicile - extérieur » n'a lieu qu'une fois par saison
+    cle = lambda d: d["div"].astype(str) + "|" + d["home_team"].astype(str) + "|" + d["away_team"].astype(str)
+    deja = set(cle(fixtures))
+    nouveaux = autres[~cle(autres).isin(deja)]
+    return pd.concat([fixtures, nouveaux], ignore_index=True).sort_values(["date", "time"]).reset_index(drop=True)
+
+
 def _cle_nom(nom):
     """Nom simplifié pour comparer : minuscules, sans accents, ponctuation ni FC / CF / AC…"""
     import unicodedata, re
